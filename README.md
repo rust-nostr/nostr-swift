@@ -19,7 +19,7 @@ as a package dependency in Xcode.
 Add the following to the dependencies array in your `Package.swift`:
 
 ``` swift
-.package(url: "https://github.com/rust-nostr/nostr-swift.git", from: "0.0.1"),
+.package(url: "https://github.com/rust-nostr/nostr-swift.git", from: "0.0.2"),
 ```
 
 ## 📄 Usage
@@ -27,8 +27,8 @@ Add the following to the dependencies array in your `Package.swift`:
 ``` swift
 import Nostr
 
-// TODO
-
+let keys = Keys.generate();
+let event = try EventBuilder.newTextNote(content: "Hello from Rust Nostr SDK Swift bindings", tags: []).toEvent(keys: keys);
 ```
 
 ## Information for Maintainers and Contributors
