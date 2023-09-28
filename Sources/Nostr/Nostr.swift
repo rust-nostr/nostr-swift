@@ -392,143 +392,10 @@ fileprivate struct FfiConverterString: FfiConverter {
 }
 
 
-public protocol AccountMetadataProtocol {
-    func `name`(`name`: String)   -> AccountMetadata
-    func `displayName`(`displayName`: String)   -> AccountMetadata
-    func `about`(`about`: String)   -> AccountMetadata
-    func `picture`(`picture`: String)  throws -> AccountMetadata
-    func `nip05`(`nip05`: String)   -> AccountMetadata
-    
-}
-
-public class AccountMetadata: AccountMetadataProtocol {
-    fileprivate let pointer: UnsafeMutableRawPointer
-
-    // TODO: We'd like this to be `private` but for Swifty reasons,
-    // we can't implement `FfiConverter` without making this `required` and we can't
-    // make it `required` without making it `public`.
-    required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
-        self.pointer = pointer
-    }
-    public convenience init()  {
-        self.init(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_accountmetadata_new($0)
-})
-    }
-
-    deinit {
-        try! rustCall { uniffi_nostr_fn_free_accountmetadata(pointer, $0) }
-    }
-
-    
-
-    
-    
-
-    public func `name`(`name`: String)  -> AccountMetadata {
-        return try!  FfiConverterTypeAccountMetadata.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_accountmetadata_name(self.pointer, 
-        FfiConverterString.lower(`name`),$0
-    )
-}
-        )
-    }
-
-    public func `displayName`(`displayName`: String)  -> AccountMetadata {
-        return try!  FfiConverterTypeAccountMetadata.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_accountmetadata_display_name(self.pointer, 
-        FfiConverterString.lower(`displayName`),$0
-    )
-}
-        )
-    }
-
-    public func `about`(`about`: String)  -> AccountMetadata {
-        return try!  FfiConverterTypeAccountMetadata.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_accountmetadata_about(self.pointer, 
-        FfiConverterString.lower(`about`),$0
-    )
-}
-        )
-    }
-
-    public func `picture`(`picture`: String) throws -> AccountMetadata {
-        return try  FfiConverterTypeAccountMetadata.lift(
-            try 
-    rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_method_accountmetadata_picture(self.pointer, 
-        FfiConverterString.lower(`picture`),$0
-    )
-}
-        )
-    }
-
-    public func `nip05`(`nip05`: String)  -> AccountMetadata {
-        return try!  FfiConverterTypeAccountMetadata.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_accountmetadata_nip05(self.pointer, 
-        FfiConverterString.lower(`nip05`),$0
-    )
-}
-        )
-    }
-}
-
-public struct FfiConverterTypeAccountMetadata: FfiConverter {
-    typealias FfiType = UnsafeMutableRawPointer
-    typealias SwiftType = AccountMetadata
-
-    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> AccountMetadata {
-        let v: UInt64 = try readInt(&buf)
-        // The Rust code won't compile if a pointer won't fit in a UInt64.
-        // We have to go via `UInt` because that's the thing that's the size of a pointer.
-        let ptr = UnsafeMutableRawPointer(bitPattern: UInt(truncatingIfNeeded: v))
-        if (ptr == nil) {
-            throw UniffiInternalError.unexpectedNullPointer
-        }
-        return try lift(ptr!)
-    }
-
-    public static func write(_ value: AccountMetadata, into buf: inout [UInt8]) {
-        // This fiddling is because `Int` is the thing that's the same size as a pointer.
-        // The Rust code won't compile if a pointer won't fit in a `UInt64`.
-        writeInt(&buf, UInt64(bitPattern: Int64(Int(bitPattern: lower(value)))))
-    }
-
-    public static func lift(_ pointer: UnsafeMutableRawPointer) throws -> AccountMetadata {
-        return AccountMetadata(unsafeFromRawPointer: pointer)
-    }
-
-    public static func lower(_ value: AccountMetadata) -> UnsafeMutableRawPointer {
-        return value.pointer
-    }
-}
-
-
-public func FfiConverterTypeAccountMetadata_lift(_ pointer: UnsafeMutableRawPointer) throws -> AccountMetadata {
-    return try FfiConverterTypeAccountMetadata.lift(pointer)
-}
-
-public func FfiConverterTypeAccountMetadata_lower(_ value: AccountMetadata) -> UnsafeMutableRawPointer {
-    return FfiConverterTypeAccountMetadata.lower(value)
-}
-
-
 public protocol ContactProtocol {
-    func `alias`()   -> String?
-    func `publicKey`()   -> PublicKey
-    func `relayUrl`()   -> String?
+    func alias()   -> String?
+    func publicKey()   -> PublicKey
+    func relayUrl()   -> String?
     
 }
 
@@ -541,12 +408,12 @@ public class Contact: ContactProtocol {
     required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
         self.pointer = pointer
     }
-    public convenience init(`pk`: PublicKey, `relayUrl`: String? = nil, `alias`: String? = nil)  {
+    public convenience init(pk: PublicKey, relayUrl: String? = nil, alias: String? = nil)  {
         self.init(unsafeFromRawPointer: try! rustCall() {
     uniffi_nostr_fn_constructor_contact_new(
-        FfiConverterTypePublicKey.lower(`pk`),
-        FfiConverterOptionString.lower(`relayUrl`),
-        FfiConverterOptionString.lower(`alias`),$0)
+        FfiConverterTypePublicKey.lower(pk),
+        FfiConverterOptionString.lower(relayUrl),
+        FfiConverterOptionString.lower(alias),$0)
 })
     }
 
@@ -559,7 +426,7 @@ public class Contact: ContactProtocol {
     
     
 
-    public func `alias`()  -> String? {
+    public func alias()  -> String? {
         return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
@@ -570,7 +437,7 @@ public class Contact: ContactProtocol {
         )
     }
 
-    public func `publicKey`()  -> PublicKey {
+    public func publicKey()  -> PublicKey {
         return try!  FfiConverterTypePublicKey.lift(
             try! 
     rustCall() {
@@ -581,7 +448,7 @@ public class Contact: ContactProtocol {
         )
     }
 
-    public func `relayUrl`()  -> String? {
+    public func relayUrl()  -> String? {
         return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
@@ -634,15 +501,15 @@ public func FfiConverterTypeContact_lower(_ value: Contact) -> UnsafeMutableRawP
 
 
 public protocol EventProtocol {
-    func `id`()   -> EventId
-    func `pubkey`()   -> PublicKey
-    func `createdAt`()   -> Timestamp
-    func `kind`()   -> UInt64
-    func `tags`()   -> [Tag]
-    func `content`()   -> String
-    func `signature`()   -> String
-    func `verify`()   -> Bool
-    func `asJson`()   -> String
+    func asJson()   -> String
+    func content()   -> String
+    func createdAt()   -> Timestamp
+    func id()   -> EventId
+    func kind()   -> UInt64
+    func pubkey()   -> PublicKey
+    func signature()   -> String
+    func tags()   -> [Tag]
+    func verify()   -> Bool
     
 }
 
@@ -662,10 +529,10 @@ public class Event: EventProtocol {
 
     
 
-    public static func `fromJson`(`json`: String) throws -> Event {
+    public static func fromJson(json: String) throws -> Event {
         return Event(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_event_from_json(
-        FfiConverterString.lower(`json`),$0)
+        FfiConverterString.lower(json),$0)
 })
     }
 
@@ -674,62 +541,18 @@ public class Event: EventProtocol {
     
     
 
-    public func `id`()  -> EventId {
-        return try!  FfiConverterTypeEventId.lift(
+    public func asJson()  -> String {
+        return try!  FfiConverterString.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_event_id(self.pointer, $0
+    uniffi_nostr_fn_method_event_as_json(self.pointer, $0
     )
 }
         )
     }
 
-    public func `pubkey`()  -> PublicKey {
-        return try!  FfiConverterTypePublicKey.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_event_pubkey(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `createdAt`()  -> Timestamp {
-        return try!  FfiConverterTypeTimestamp.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_event_created_at(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `kind`()  -> UInt64 {
-        return try!  FfiConverterUInt64.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_event_kind(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `tags`()  -> [Tag] {
-        return try!  FfiConverterSequenceTypeTag.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_event_tags(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `content`()  -> String {
+    public func content()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
@@ -740,7 +563,51 @@ public class Event: EventProtocol {
         )
     }
 
-    public func `signature`()  -> String {
+    public func createdAt()  -> Timestamp {
+        return try!  FfiConverterTypeTimestamp.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_event_created_at(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func id()  -> EventId {
+        return try!  FfiConverterTypeEventId.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_event_id(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func kind()  -> UInt64 {
+        return try!  FfiConverterUInt64.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_event_kind(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func pubkey()  -> PublicKey {
+        return try!  FfiConverterTypePublicKey.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_event_pubkey(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func signature()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
@@ -751,23 +618,23 @@ public class Event: EventProtocol {
         )
     }
 
-    public func `verify`()  -> Bool {
-        return try!  FfiConverterBool.lift(
+    public func tags()  -> [Tag] {
+        return try!  FfiConverterSequenceTypeTag.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_event_verify(self.pointer, $0
+    uniffi_nostr_fn_method_event_tags(self.pointer, $0
     )
 }
         )
     }
 
-    public func `asJson`()  -> String {
-        return try!  FfiConverterString.lift(
+    public func verify()  -> Bool {
+        return try!  FfiConverterBool.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_event_as_json(self.pointer, $0
+    uniffi_nostr_fn_method_event_verify(self.pointer, $0
     )
 }
         )
@@ -815,10 +682,10 @@ public func FfiConverterTypeEvent_lower(_ value: Event) -> UnsafeMutableRawPoint
 
 
 public protocol EventBuilderProtocol {
-    func `toEvent`(`keys`: Keys)  throws -> Event
-    func `toPowEvent`(`keys`: Keys, `difficulty`: UInt8)  throws -> Event
-    func `toUnsignedEvent`(`publicKey`: PublicKey)   -> UnsignedEvent
-    func `toUnsignedPowEvent`(`publicKey`: PublicKey, `difficulty`: UInt8)   -> UnsignedEvent
+    func toEvent(keys: Keys)  throws -> Event
+    func toPowEvent(keys: Keys, difficulty: UInt8)  throws -> Event
+    func toUnsignedEvent(publicKey: PublicKey)   -> UnsignedEvent
+    func toUnsignedPowEvent(publicKey: PublicKey, difficulty: UInt8)   -> UnsignedEvent
     
 }
 
@@ -831,12 +698,12 @@ public class EventBuilder: EventBuilderProtocol {
     required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
         self.pointer = pointer
     }
-    public convenience init(`kind`: UInt64, `content`: String, `tags`: [Tag]) throws {
+    public convenience init(kind: UInt64, content: String, tags: [Tag]) throws {
         self.init(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_eventbuilder_new(
-        FfiConverterUInt64.lower(`kind`),
-        FfiConverterString.lower(`content`),
-        FfiConverterSequenceTypeTag.lower(`tags`),$0)
+        FfiConverterUInt64.lower(kind),
+        FfiConverterString.lower(content),
+        FfiConverterSequenceTypeTag.lower(tags),$0)
 })
     }
 
@@ -846,195 +713,192 @@ public class EventBuilder: EventBuilderProtocol {
 
     
 
-    public static func `setMetadata`(`metadata`: AccountMetadata)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_set_metadata(
-        FfiConverterTypeAccountMetadata.lower(`metadata`),$0)
-})
-    }
-
-    
-
-    public static func `addRecommendedRelay`(`url`: String) throws -> EventBuilder {
+    public static func addRecommendedRelay(url: String) throws -> EventBuilder {
         return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_eventbuilder_add_recommended_relay(
-        FfiConverterString.lower(`url`),$0)
+        FfiConverterString.lower(url),$0)
 })
     }
 
     
 
-    public static func `newTextNote`(`content`: String, `tags`: [Tag]) throws -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_eventbuilder_new_text_note(
-        FfiConverterString.lower(`content`),
-        FfiConverterSequenceTypeTag.lower(`tags`),$0)
-})
-    }
-
-    
-
-    public static func `longFormTextNote`(`content`: String, `tags`: [Tag]) throws -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_eventbuilder_long_form_text_note(
-        FfiConverterString.lower(`content`),
-        FfiConverterSequenceTypeTag.lower(`tags`),$0)
-})
-    }
-
-    
-
-    public static func `repost`(`eventId`: EventId, `publicKey`: PublicKey)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_repost(
-        FfiConverterTypeEventId.lower(`eventId`),
-        FfiConverterTypePublicKey.lower(`publicKey`),$0)
-})
-    }
-
-    
-
-    public static func `setContactList`(`list`: [Contact])  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_set_contact_list(
-        FfiConverterSequenceTypeContact.lower(`list`),$0)
-})
-    }
-
-    
-
-    public static func `newEncryptedDirectMsg`(`senderKeys`: Keys, `receiverPubkey`: PublicKey, `content`: String, `reply`: EventId?) throws -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_eventbuilder_new_encrypted_direct_msg(
-        FfiConverterTypeKeys.lower(`senderKeys`),
-        FfiConverterTypePublicKey.lower(`receiverPubkey`),
-        FfiConverterString.lower(`content`),
-        FfiConverterOptionTypeEventId.lower(`reply`),$0)
-})
-    }
-
-    
-
-    public static func `delete`(`ids`: [EventId], `reason`: String? = nil)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_delete(
-        FfiConverterSequenceTypeEventId.lower(`ids`),
-        FfiConverterOptionString.lower(`reason`),$0)
-})
-    }
-
-    
-
-    public static func `newReaction`(`eventId`: EventId, `publicKey`: PublicKey, `content`: String)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_new_reaction(
-        FfiConverterTypeEventId.lower(`eventId`),
-        FfiConverterTypePublicKey.lower(`publicKey`),
-        FfiConverterString.lower(`content`),$0)
-})
-    }
-
-    
-
-    public static func `newChannel`(`metadata`: AccountMetadata)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_new_channel(
-        FfiConverterTypeAccountMetadata.lower(`metadata`),$0)
-})
-    }
-
-    
-
-    public static func `setChannelMetadata`(`channelId`: String, `relayUrl`: String?, `metadata`: AccountMetadata) throws -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_eventbuilder_set_channel_metadata(
-        FfiConverterString.lower(`channelId`),
-        FfiConverterOptionString.lower(`relayUrl`),
-        FfiConverterTypeAccountMetadata.lower(`metadata`),$0)
-})
-    }
-
-    
-
-    public static func `newChannelMsg`(`channelId`: String, `relayUrl`: String, `content`: String) throws -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_eventbuilder_new_channel_msg(
-        FfiConverterString.lower(`channelId`),
-        FfiConverterString.lower(`relayUrl`),
-        FfiConverterString.lower(`content`),$0)
-})
-    }
-
-    
-
-    public static func `hideChannelMsg`(`messageId`: EventId, `reason`: String?)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_hide_channel_msg(
-        FfiConverterTypeEventId.lower(`messageId`),
-        FfiConverterOptionString.lower(`reason`),$0)
-})
-    }
-
-    
-
-    public static func `muteChannelUser`(`publicKey`: PublicKey, `reason`: String?)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_mute_channel_user(
-        FfiConverterTypePublicKey.lower(`publicKey`),
-        FfiConverterOptionString.lower(`reason`),$0)
-})
-    }
-
-    
-
-    public static func `auth`(`challenge`: String, `relayUrl`: String) throws -> EventBuilder {
+    public static func auth(challenge: String, relayUrl: String) throws -> EventBuilder {
         return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_eventbuilder_auth(
-        FfiConverterString.lower(`challenge`),
-        FfiConverterString.lower(`relayUrl`),$0)
+        FfiConverterString.lower(challenge),
+        FfiConverterString.lower(relayUrl),$0)
 })
     }
 
     
 
-    public static func `report`(`tags`: [Tag], `content`: String)  -> EventBuilder {
+    public static func delete(ids: [EventId], reason: String? = nil)  -> EventBuilder {
         return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_report(
-        FfiConverterSequenceTypeTag.lower(`tags`),
-        FfiConverterString.lower(`content`),$0)
+    uniffi_nostr_fn_constructor_eventbuilder_delete(
+        FfiConverterSequenceTypeEventId.lower(ids),
+        FfiConverterOptionString.lower(reason),$0)
 })
     }
 
     
 
-    public static func `newZapRequest`(`pubkey`: PublicKey, `eventId`: EventId?, `amount`: UInt64?, `lnurl`: String?)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_new_zap_request(
-        FfiConverterTypePublicKey.lower(`pubkey`),
-        FfiConverterOptionTypeEventId.lower(`eventId`),
-        FfiConverterOptionUInt64.lower(`amount`),
-        FfiConverterOptionString.lower(`lnurl`),$0)
-})
-    }
-
-    
-
-    public static func `newZap`(`bolt11`: String, `preimage`: String?, `zapRequest`: Event)  -> EventBuilder {
-        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_eventbuilder_new_zap(
-        FfiConverterString.lower(`bolt11`),
-        FfiConverterOptionString.lower(`preimage`),
-        FfiConverterTypeEvent.lower(`zapRequest`),$0)
-})
-    }
-
-    
-
-    public static func `fileMetadata`(`description`: String, `metadata`: FileMetadata)  -> EventBuilder {
+    public static func fileMetadata(description: String, metadata: FileMetadata)  -> EventBuilder {
         return EventBuilder(unsafeFromRawPointer: try! rustCall() {
     uniffi_nostr_fn_constructor_eventbuilder_file_metadata(
-        FfiConverterString.lower(`description`),
-        FfiConverterTypeFileMetadata.lower(`metadata`),$0)
+        FfiConverterString.lower(description),
+        FfiConverterTypeFileMetadata.lower(metadata),$0)
+})
+    }
+
+    
+
+    public static func hideChannelMsg(messageId: EventId, reason: String?)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_hide_channel_msg(
+        FfiConverterTypeEventId.lower(messageId),
+        FfiConverterOptionString.lower(reason),$0)
+})
+    }
+
+    
+
+    public static func longFormTextNote(content: String, tags: [Tag]) throws -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_eventbuilder_long_form_text_note(
+        FfiConverterString.lower(content),
+        FfiConverterSequenceTypeTag.lower(tags),$0)
+})
+    }
+
+    
+
+    public static func muteChannelUser(publicKey: PublicKey, reason: String?)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_mute_channel_user(
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterOptionString.lower(reason),$0)
+})
+    }
+
+    
+
+    public static func newChannel(metadata: Metadata)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_new_channel(
+        FfiConverterTypeMetadata.lower(metadata),$0)
+})
+    }
+
+    
+
+    public static func newChannelMsg(channelId: String, relayUrl: String, content: String) throws -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_eventbuilder_new_channel_msg(
+        FfiConverterString.lower(channelId),
+        FfiConverterString.lower(relayUrl),
+        FfiConverterString.lower(content),$0)
+})
+    }
+
+    
+
+    public static func newEncryptedDirectMsg(senderKeys: Keys, receiverPubkey: PublicKey, content: String, replyTo: EventId?) throws -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_eventbuilder_new_encrypted_direct_msg(
+        FfiConverterTypeKeys.lower(senderKeys),
+        FfiConverterTypePublicKey.lower(receiverPubkey),
+        FfiConverterString.lower(content),
+        FfiConverterOptionTypeEventId.lower(replyTo),$0)
+})
+    }
+
+    
+
+    public static func newReaction(eventId: EventId, publicKey: PublicKey, content: String)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_new_reaction(
+        FfiConverterTypeEventId.lower(eventId),
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterString.lower(content),$0)
+})
+    }
+
+    
+
+    public static func newTextNote(content: String, tags: [Tag]) throws -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_eventbuilder_new_text_note(
+        FfiConverterString.lower(content),
+        FfiConverterSequenceTypeTag.lower(tags),$0)
+})
+    }
+
+    
+
+    public static func newZapReceipt(bolt11: String, preimage: String?, zapRequest: Event)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_new_zap_receipt(
+        FfiConverterString.lower(bolt11),
+        FfiConverterOptionString.lower(preimage),
+        FfiConverterTypeEvent.lower(zapRequest),$0)
+})
+    }
+
+    
+
+    public static func newZapRequest(data: ZapRequestData)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_new_zap_request(
+        FfiConverterTypeZapRequestData.lower(data),$0)
+})
+    }
+
+    
+
+    public static func report(tags: [Tag], content: String)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_report(
+        FfiConverterSequenceTypeTag.lower(tags),
+        FfiConverterString.lower(content),$0)
+})
+    }
+
+    
+
+    public static func repost(eventId: EventId, publicKey: PublicKey)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_repost(
+        FfiConverterTypeEventId.lower(eventId),
+        FfiConverterTypePublicKey.lower(publicKey),$0)
+})
+    }
+
+    
+
+    public static func setChannelMetadata(channelId: String, relayUrl: String?, metadata: Metadata) throws -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_eventbuilder_set_channel_metadata(
+        FfiConverterString.lower(channelId),
+        FfiConverterOptionString.lower(relayUrl),
+        FfiConverterTypeMetadata.lower(metadata),$0)
+})
+    }
+
+    
+
+    public static func setContactList(list: [Contact])  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_set_contact_list(
+        FfiConverterSequenceTypeContact.lower(list),$0)
+})
+    }
+
+    
+
+    public static func setMetadata(metadata: Metadata)  -> EventBuilder {
+        return EventBuilder(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_eventbuilder_set_metadata(
+        FfiConverterTypeMetadata.lower(metadata),$0)
 })
     }
 
@@ -1043,49 +907,49 @@ public class EventBuilder: EventBuilderProtocol {
     
     
 
-    public func `toEvent`(`keys`: Keys) throws -> Event {
+    public func toEvent(keys: Keys) throws -> Event {
         return try  FfiConverterTypeEvent.lift(
             try 
     rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_method_eventbuilder_to_event(self.pointer, 
-        FfiConverterTypeKeys.lower(`keys`),$0
+        FfiConverterTypeKeys.lower(keys),$0
     )
 }
         )
     }
 
-    public func `toPowEvent`(`keys`: Keys, `difficulty`: UInt8) throws -> Event {
+    public func toPowEvent(keys: Keys, difficulty: UInt8) throws -> Event {
         return try  FfiConverterTypeEvent.lift(
             try 
     rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_method_eventbuilder_to_pow_event(self.pointer, 
-        FfiConverterTypeKeys.lower(`keys`),
-        FfiConverterUInt8.lower(`difficulty`),$0
+        FfiConverterTypeKeys.lower(keys),
+        FfiConverterUInt8.lower(difficulty),$0
     )
 }
         )
     }
 
-    public func `toUnsignedEvent`(`publicKey`: PublicKey)  -> UnsignedEvent {
+    public func toUnsignedEvent(publicKey: PublicKey)  -> UnsignedEvent {
         return try!  FfiConverterTypeUnsignedEvent.lift(
             try! 
     rustCall() {
     
     uniffi_nostr_fn_method_eventbuilder_to_unsigned_event(self.pointer, 
-        FfiConverterTypePublicKey.lower(`publicKey`),$0
+        FfiConverterTypePublicKey.lower(publicKey),$0
     )
 }
         )
     }
 
-    public func `toUnsignedPowEvent`(`publicKey`: PublicKey, `difficulty`: UInt8)  -> UnsignedEvent {
+    public func toUnsignedPowEvent(publicKey: PublicKey, difficulty: UInt8)  -> UnsignedEvent {
         return try!  FfiConverterTypeUnsignedEvent.lift(
             try! 
     rustCall() {
     
     uniffi_nostr_fn_method_eventbuilder_to_unsigned_pow_event(self.pointer, 
-        FfiConverterTypePublicKey.lower(`publicKey`),
-        FfiConverterUInt8.lower(`difficulty`),$0
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterUInt8.lower(difficulty),$0
     )
 }
         )
@@ -1133,10 +997,10 @@ public func FfiConverterTypeEventBuilder_lower(_ value: EventBuilder) -> UnsafeM
 
 
 public protocol EventIdProtocol {
-    func `asBytes`()   -> [UInt8]
-    func `toHex`()   -> String
-    func `toBech32`()  throws -> String
-    func `toNostrUri`()  throws -> String
+    func asBytes()   -> [UInt8]
+    func toBech32()  throws -> String
+    func toHex()   -> String
+    func toNostrUri()  throws -> String
     
 }
 
@@ -1149,14 +1013,14 @@ public class EventId: EventIdProtocol {
     required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
         self.pointer = pointer
     }
-    public convenience init(`pubkey`: PublicKey, `createdAt`: Timestamp, `kind`: UInt64, `tags`: [[String]], `content`: String) throws {
+    public convenience init(pubkey: PublicKey, createdAt: Timestamp, kind: UInt64, tags: [[String]], content: String) throws {
         self.init(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_eventid_new(
-        FfiConverterTypePublicKey.lower(`pubkey`),
-        FfiConverterTypeTimestamp.lower(`createdAt`),
-        FfiConverterUInt64.lower(`kind`),
-        FfiConverterSequenceSequenceString.lower(`tags`),
-        FfiConverterString.lower(`content`),$0)
+        FfiConverterTypePublicKey.lower(pubkey),
+        FfiConverterTypeTimestamp.lower(createdAt),
+        FfiConverterUInt64.lower(kind),
+        FfiConverterSequenceSequenceString.lower(tags),
+        FfiConverterString.lower(content),$0)
 })
     }
 
@@ -1166,37 +1030,37 @@ public class EventId: EventIdProtocol {
 
     
 
-    public static func `fromSlice`(`bytes`: [UInt8]) throws -> EventId {
-        return EventId(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_eventid_from_slice(
-        FfiConverterSequenceUInt8.lower(`bytes`),$0)
-})
-    }
-
-    
-
-    public static func `fromHex`(`hex`: String) throws -> EventId {
-        return EventId(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_eventid_from_hex(
-        FfiConverterString.lower(`hex`),$0)
-})
-    }
-
-    
-
-    public static func `fromBech32`(`id`: String) throws -> EventId {
+    public static func fromBech32(id: String) throws -> EventId {
         return EventId(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_eventid_from_bech32(
-        FfiConverterString.lower(`id`),$0)
+        FfiConverterString.lower(id),$0)
 })
     }
 
     
 
-    public static func `fromNostrUri`(`uri`: String) throws -> EventId {
+    public static func fromBytes(bytes: [UInt8]) throws -> EventId {
+        return EventId(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_eventid_from_bytes(
+        FfiConverterSequenceUInt8.lower(bytes),$0)
+})
+    }
+
+    
+
+    public static func fromHex(hex: String) throws -> EventId {
+        return EventId(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_eventid_from_hex(
+        FfiConverterString.lower(hex),$0)
+})
+    }
+
+    
+
+    public static func fromNostrUri(uri: String) throws -> EventId {
         return EventId(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_eventid_from_nostr_uri(
-        FfiConverterString.lower(`uri`),$0)
+        FfiConverterString.lower(uri),$0)
 })
     }
 
@@ -1205,7 +1069,7 @@ public class EventId: EventIdProtocol {
     
     
 
-    public func `asBytes`()  -> [UInt8] {
+    public func asBytes()  -> [UInt8] {
         return try!  FfiConverterSequenceUInt8.lift(
             try! 
     rustCall() {
@@ -1216,7 +1080,17 @@ public class EventId: EventIdProtocol {
         )
     }
 
-    public func `toHex`()  -> String {
+    public func toBech32() throws -> String {
+        return try  FfiConverterString.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_eventid_to_bech32(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func toHex()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
@@ -1227,17 +1101,7 @@ public class EventId: EventIdProtocol {
         )
     }
 
-    public func `toBech32`() throws -> String {
-        return try  FfiConverterString.lift(
-            try 
-    rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_method_eventid_to_bech32(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `toNostrUri`() throws -> String {
+    public func toNostrUri() throws -> String {
         return try  FfiConverterString.lift(
             try 
     rustCallWithError(FfiConverterTypeNostrError.lift) {
@@ -1289,11 +1153,11 @@ public func FfiConverterTypeEventId_lower(_ value: EventId) -> UnsafeMutableRawP
 
 
 public protocol FileMetadataProtocol {
-    func `aes256Gcm`(`key`: String, `iv`: String)   -> FileMetadata
-    func `size`(`size`: UInt64)   -> FileMetadata
-    func `dimensions`(`dim`: ImageDimensions)   -> FileMetadata
-    func `magnet`(`magnet`: String)   -> FileMetadata
-    func `blurhash`(`blurhash`: String)   -> FileMetadata
+    func aes256Gcm(key: String, iv: String)   -> FileMetadata
+    func blurhash(blurhash: String)   -> FileMetadata
+    func dimensions(dim: ImageDimensions)   -> FileMetadata
+    func magnet(magnet: String)   -> FileMetadata
+    func size(size: UInt64)   -> FileMetadata
     
 }
 
@@ -1306,12 +1170,12 @@ public class FileMetadata: FileMetadataProtocol {
     required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
         self.pointer = pointer
     }
-    public convenience init(`url`: String, `mimeType`: String, `hash`: String) throws {
+    public convenience init(url: String, mimeType: String, hash: String) throws {
         self.init(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_filemetadata_new(
-        FfiConverterString.lower(`url`),
-        FfiConverterString.lower(`mimeType`),
-        FfiConverterString.lower(`hash`),$0)
+        FfiConverterString.lower(url),
+        FfiConverterString.lower(mimeType),
+        FfiConverterString.lower(hash),$0)
 })
     }
 
@@ -1324,62 +1188,62 @@ public class FileMetadata: FileMetadataProtocol {
     
     
 
-    public func `aes256Gcm`(`key`: String, `iv`: String)  -> FileMetadata {
+    public func aes256Gcm(key: String, iv: String)  -> FileMetadata {
         return try!  FfiConverterTypeFileMetadata.lift(
             try! 
     rustCall() {
     
     uniffi_nostr_fn_method_filemetadata_aes_256_gcm(self.pointer, 
-        FfiConverterString.lower(`key`),
-        FfiConverterString.lower(`iv`),$0
+        FfiConverterString.lower(key),
+        FfiConverterString.lower(iv),$0
     )
 }
         )
     }
 
-    public func `size`(`size`: UInt64)  -> FileMetadata {
-        return try!  FfiConverterTypeFileMetadata.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filemetadata_size(self.pointer, 
-        FfiConverterUInt64.lower(`size`),$0
-    )
-}
-        )
-    }
-
-    public func `dimensions`(`dim`: ImageDimensions)  -> FileMetadata {
-        return try!  FfiConverterTypeFileMetadata.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filemetadata_dimensions(self.pointer, 
-        FfiConverterTypeImageDimensions.lower(`dim`),$0
-    )
-}
-        )
-    }
-
-    public func `magnet`(`magnet`: String)  -> FileMetadata {
-        return try!  FfiConverterTypeFileMetadata.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filemetadata_magnet(self.pointer, 
-        FfiConverterString.lower(`magnet`),$0
-    )
-}
-        )
-    }
-
-    public func `blurhash`(`blurhash`: String)  -> FileMetadata {
+    public func blurhash(blurhash: String)  -> FileMetadata {
         return try!  FfiConverterTypeFileMetadata.lift(
             try! 
     rustCall() {
     
     uniffi_nostr_fn_method_filemetadata_blurhash(self.pointer, 
-        FfiConverterString.lower(`blurhash`),$0
+        FfiConverterString.lower(blurhash),$0
+    )
+}
+        )
+    }
+
+    public func dimensions(dim: ImageDimensions)  -> FileMetadata {
+        return try!  FfiConverterTypeFileMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filemetadata_dimensions(self.pointer, 
+        FfiConverterTypeImageDimensions.lower(dim),$0
+    )
+}
+        )
+    }
+
+    public func magnet(magnet: String)  -> FileMetadata {
+        return try!  FfiConverterTypeFileMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filemetadata_magnet(self.pointer, 
+        FfiConverterString.lower(magnet),$0
+    )
+}
+        )
+    }
+
+    public func size(size: UInt64)  -> FileMetadata {
+        return try!  FfiConverterTypeFileMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filemetadata_size(self.pointer, 
+        FfiConverterUInt64.lower(size),$0
     )
 }
         )
@@ -1427,22 +1291,23 @@ public func FfiConverterTypeFileMetadata_lower(_ value: FileMetadata) -> UnsafeM
 
 
 public protocol FilterProtocol {
-    func `id`(`id`: String)   -> Filter
-    func `ids`(`ids`: [String])   -> Filter
-    func `author`(`author`: String)   -> Filter
-    func `authors`(`authors`: [String])   -> Filter
-    func `kind`(`kind`: UInt64)   -> Filter
-    func `kinds`(`kinds`: [UInt64])   -> Filter
-    func `event`(`eventId`: EventId)   -> Filter
-    func `events`(`ids`: [EventId])   -> Filter
-    func `pubkey`(`pubkey`: PublicKey)   -> Filter
-    func `pubkeys`(`pubkeys`: [PublicKey])   -> Filter
-    func `search`(`text`: String)   -> Filter
-    func `since`(`timestamp`: Timestamp)   -> Filter
-    func `until`(`timestamp`: Timestamp)   -> Filter
-    func `limit`(`limit`: UInt64)   -> Filter
-    func `customTag`(`tag`: Alphabet, `content`: [String])   -> Filter
-    func `asJson`()   -> String
+    func asJson()   -> String
+    func author(author: String)   -> Filter
+    func authors(authors: [String])   -> Filter
+    func customTag(tag: Alphabet, content: [String])   -> Filter
+    func event(eventId: EventId)   -> Filter
+    func events(ids: [EventId])   -> Filter
+    func id(id: String)   -> Filter
+    func identifier(identifier: String)   -> Filter
+    func ids(ids: [String])   -> Filter
+    func kind(kind: UInt64)   -> Filter
+    func kinds(kinds: [UInt64])   -> Filter
+    func limit(limit: UInt64)   -> Filter
+    func pubkey(pubkey: PublicKey)   -> Filter
+    func pubkeys(pubkeys: [PublicKey])   -> Filter
+    func search(text: String)   -> Filter
+    func since(timestamp: Timestamp)   -> Filter
+    func until(timestamp: Timestamp)   -> Filter
     
 }
 
@@ -1467,10 +1332,10 @@ public class Filter: FilterProtocol {
 
     
 
-    public static func `fromJson`(`json`: String) throws -> Filter {
+    public static func fromJson(json: String) throws -> Filter {
         return Filter(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_filter_from_json(
-        FfiConverterString.lower(`json`),$0)
+        FfiConverterString.lower(json),$0)
 })
     }
 
@@ -1479,193 +1344,205 @@ public class Filter: FilterProtocol {
     
     
 
-    public func `id`(`id`: String)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_id(self.pointer, 
-        FfiConverterString.lower(`id`),$0
-    )
-}
-        )
-    }
-
-    public func `ids`(`ids`: [String])  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_ids(self.pointer, 
-        FfiConverterSequenceString.lower(`ids`),$0
-    )
-}
-        )
-    }
-
-    public func `author`(`author`: String)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_author(self.pointer, 
-        FfiConverterString.lower(`author`),$0
-    )
-}
-        )
-    }
-
-    public func `authors`(`authors`: [String])  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_authors(self.pointer, 
-        FfiConverterSequenceString.lower(`authors`),$0
-    )
-}
-        )
-    }
-
-    public func `kind`(`kind`: UInt64)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_kind(self.pointer, 
-        FfiConverterUInt64.lower(`kind`),$0
-    )
-}
-        )
-    }
-
-    public func `kinds`(`kinds`: [UInt64])  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_kinds(self.pointer, 
-        FfiConverterSequenceUInt64.lower(`kinds`),$0
-    )
-}
-        )
-    }
-
-    public func `event`(`eventId`: EventId)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_event(self.pointer, 
-        FfiConverterTypeEventId.lower(`eventId`),$0
-    )
-}
-        )
-    }
-
-    public func `events`(`ids`: [EventId])  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_events(self.pointer, 
-        FfiConverterSequenceTypeEventId.lower(`ids`),$0
-    )
-}
-        )
-    }
-
-    public func `pubkey`(`pubkey`: PublicKey)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_pubkey(self.pointer, 
-        FfiConverterTypePublicKey.lower(`pubkey`),$0
-    )
-}
-        )
-    }
-
-    public func `pubkeys`(`pubkeys`: [PublicKey])  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_pubkeys(self.pointer, 
-        FfiConverterSequenceTypePublicKey.lower(`pubkeys`),$0
-    )
-}
-        )
-    }
-
-    public func `search`(`text`: String)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_search(self.pointer, 
-        FfiConverterString.lower(`text`),$0
-    )
-}
-        )
-    }
-
-    public func `since`(`timestamp`: Timestamp)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_since(self.pointer, 
-        FfiConverterTypeTimestamp.lower(`timestamp`),$0
-    )
-}
-        )
-    }
-
-    public func `until`(`timestamp`: Timestamp)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_until(self.pointer, 
-        FfiConverterTypeTimestamp.lower(`timestamp`),$0
-    )
-}
-        )
-    }
-
-    public func `limit`(`limit`: UInt64)  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_limit(self.pointer, 
-        FfiConverterUInt64.lower(`limit`),$0
-    )
-}
-        )
-    }
-
-    public func `customTag`(`tag`: Alphabet, `content`: [String])  -> Filter {
-        return try!  FfiConverterTypeFilter.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_filter_custom_tag(self.pointer, 
-        FfiConverterTypeAlphabet.lower(`tag`),
-        FfiConverterSequenceString.lower(`content`),$0
-    )
-}
-        )
-    }
-
-    public func `asJson`()  -> String {
+    public func asJson()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
     
     uniffi_nostr_fn_method_filter_as_json(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func author(author: String)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_author(self.pointer, 
+        FfiConverterString.lower(author),$0
+    )
+}
+        )
+    }
+
+    public func authors(authors: [String])  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_authors(self.pointer, 
+        FfiConverterSequenceString.lower(authors),$0
+    )
+}
+        )
+    }
+
+    public func customTag(tag: Alphabet, content: [String])  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_custom_tag(self.pointer, 
+        FfiConverterTypeAlphabet.lower(tag),
+        FfiConverterSequenceString.lower(content),$0
+    )
+}
+        )
+    }
+
+    public func event(eventId: EventId)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_event(self.pointer, 
+        FfiConverterTypeEventId.lower(eventId),$0
+    )
+}
+        )
+    }
+
+    public func events(ids: [EventId])  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_events(self.pointer, 
+        FfiConverterSequenceTypeEventId.lower(ids),$0
+    )
+}
+        )
+    }
+
+    public func id(id: String)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_id(self.pointer, 
+        FfiConverterString.lower(id),$0
+    )
+}
+        )
+    }
+
+    public func identifier(identifier: String)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_identifier(self.pointer, 
+        FfiConverterString.lower(identifier),$0
+    )
+}
+        )
+    }
+
+    public func ids(ids: [String])  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_ids(self.pointer, 
+        FfiConverterSequenceString.lower(ids),$0
+    )
+}
+        )
+    }
+
+    public func kind(kind: UInt64)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_kind(self.pointer, 
+        FfiConverterUInt64.lower(kind),$0
+    )
+}
+        )
+    }
+
+    public func kinds(kinds: [UInt64])  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_kinds(self.pointer, 
+        FfiConverterSequenceUInt64.lower(kinds),$0
+    )
+}
+        )
+    }
+
+    public func limit(limit: UInt64)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_limit(self.pointer, 
+        FfiConverterUInt64.lower(limit),$0
+    )
+}
+        )
+    }
+
+    public func pubkey(pubkey: PublicKey)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_pubkey(self.pointer, 
+        FfiConverterTypePublicKey.lower(pubkey),$0
+    )
+}
+        )
+    }
+
+    public func pubkeys(pubkeys: [PublicKey])  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_pubkeys(self.pointer, 
+        FfiConverterSequenceTypePublicKey.lower(pubkeys),$0
+    )
+}
+        )
+    }
+
+    public func search(text: String)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_search(self.pointer, 
+        FfiConverterString.lower(text),$0
+    )
+}
+        )
+    }
+
+    public func since(timestamp: Timestamp)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_since(self.pointer, 
+        FfiConverterTypeTimestamp.lower(timestamp),$0
+    )
+}
+        )
+    }
+
+    public func until(timestamp: Timestamp)  -> Filter {
+        return try!  FfiConverterTypeFilter.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_filter_until(self.pointer, 
+        FfiConverterTypeTimestamp.lower(timestamp),$0
     )
 }
         )
@@ -1713,8 +1590,8 @@ public func FfiConverterTypeFilter_lower(_ value: Filter) -> UnsafeMutableRawPoi
 
 
 public protocol ImageDimensionsProtocol {
-    func `width`()   -> UInt64
-    func `height`()   -> UInt64
+    func height()   -> UInt64
+    func width()   -> UInt64
     
 }
 
@@ -1727,11 +1604,11 @@ public class ImageDimensions: ImageDimensionsProtocol {
     required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
         self.pointer = pointer
     }
-    public convenience init(`width`: UInt64, `height`: UInt64)  {
+    public convenience init(width: UInt64, height: UInt64)  {
         self.init(unsafeFromRawPointer: try! rustCall() {
     uniffi_nostr_fn_constructor_imagedimensions_new(
-        FfiConverterUInt64.lower(`width`),
-        FfiConverterUInt64.lower(`height`),$0)
+        FfiConverterUInt64.lower(width),
+        FfiConverterUInt64.lower(height),$0)
 })
     }
 
@@ -1744,23 +1621,23 @@ public class ImageDimensions: ImageDimensionsProtocol {
     
     
 
-    public func `width`()  -> UInt64 {
-        return try!  FfiConverterUInt64.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_imagedimensions_width(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `height`()  -> UInt64 {
+    public func height()  -> UInt64 {
         return try!  FfiConverterUInt64.lift(
             try! 
     rustCall() {
     
     uniffi_nostr_fn_method_imagedimensions_height(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func width()  -> UInt64 {
+        return try!  FfiConverterUInt64.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_imagedimensions_width(self.pointer, $0
     )
 }
         )
@@ -1808,8 +1685,8 @@ public func FfiConverterTypeImageDimensions_lower(_ value: ImageDimensions) -> U
 
 
 public protocol KeysProtocol {
-    func `publicKey`()   -> PublicKey
-    func `secretKey`()  throws -> SecretKey
+    func publicKey()   -> PublicKey
+    func secretKey()  throws -> SecretKey
     
 }
 
@@ -1822,10 +1699,10 @@ public class Keys: KeysProtocol {
     required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
         self.pointer = pointer
     }
-    public convenience init(`sk`: SecretKey)  {
+    public convenience init(sk: SecretKey)  {
         self.init(unsafeFromRawPointer: try! rustCall() {
     uniffi_nostr_fn_constructor_keys_new(
-        FfiConverterTypeSecretKey.lower(`sk`),$0)
+        FfiConverterTypeSecretKey.lower(sk),$0)
 })
     }
 
@@ -1835,34 +1712,44 @@ public class Keys: KeysProtocol {
 
     
 
-    public static func `fromPublicKey`(`pk`: PublicKey)  -> Keys {
-        return Keys(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_keys_from_public_key(
-        FfiConverterTypePublicKey.lower(`pk`),$0)
-})
-    }
-
-    
-
-    public static func `fromSkStr`(`sk`: String) throws -> Keys {
+    public static func fromMnemonic(mnemonic: String, passphrase: String? = nil) throws -> Keys {
         return Keys(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_keys_from_sk_str(
-        FfiConverterString.lower(`sk`),$0)
+    uniffi_nostr_fn_constructor_keys_from_mnemonic(
+        FfiConverterString.lower(mnemonic),
+        FfiConverterOptionString.lower(passphrase),$0)
 })
     }
 
     
 
-    public static func `fromPkStr`(`pk`: String) throws -> Keys {
+    public static func fromPkStr(pk: String) throws -> Keys {
         return Keys(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_keys_from_pk_str(
-        FfiConverterString.lower(`pk`),$0)
+        FfiConverterString.lower(pk),$0)
 })
     }
 
     
 
-    public static func `generate`()  -> Keys {
+    public static func fromPublicKey(pk: PublicKey)  -> Keys {
+        return Keys(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_keys_from_public_key(
+        FfiConverterTypePublicKey.lower(pk),$0)
+})
+    }
+
+    
+
+    public static func fromSkStr(sk: String) throws -> Keys {
+        return Keys(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_keys_from_sk_str(
+        FfiConverterString.lower(sk),$0)
+})
+    }
+
+    
+
+    public static func generate()  -> Keys {
         return Keys(unsafeFromRawPointer: try! rustCall() {
     uniffi_nostr_fn_constructor_keys_generate($0)
 })
@@ -1870,22 +1757,12 @@ public class Keys: KeysProtocol {
 
     
 
-    public static func `vanity`(`prefixes`: [String], `bech32`: Bool, `numCores`: UInt8) throws -> Keys {
+    public static func vanity(prefixes: [String], bech32: Bool, numCores: UInt8) throws -> Keys {
         return Keys(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_keys_vanity(
-        FfiConverterSequenceString.lower(`prefixes`),
-        FfiConverterBool.lower(`bech32`),
-        FfiConverterUInt8.lower(`numCores`),$0)
-})
-    }
-
-    
-
-    public static func `fromMnemonic`(`mnemonic`: String, `passphrase`: String? = nil) throws -> Keys {
-        return Keys(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_keys_from_mnemonic(
-        FfiConverterString.lower(`mnemonic`),
-        FfiConverterOptionString.lower(`passphrase`),$0)
+        FfiConverterSequenceString.lower(prefixes),
+        FfiConverterBool.lower(bech32),
+        FfiConverterUInt8.lower(numCores),$0)
 })
     }
 
@@ -1894,7 +1771,7 @@ public class Keys: KeysProtocol {
     
     
 
-    public func `publicKey`()  -> PublicKey {
+    public func publicKey()  -> PublicKey {
         return try!  FfiConverterTypePublicKey.lift(
             try! 
     rustCall() {
@@ -1905,7 +1782,7 @@ public class Keys: KeysProtocol {
         )
     }
 
-    public func `secretKey`() throws -> SecretKey {
+    public func secretKey() throws -> SecretKey {
         return try  FfiConverterTypeSecretKey.lift(
             try 
     rustCallWithError(FfiConverterTypeNostrError.lift) {
@@ -1956,12 +1833,324 @@ public func FfiConverterTypeKeys_lower(_ value: Keys) -> UnsafeMutableRawPointer
 }
 
 
+public protocol MetadataProtocol {
+    func asJson()   -> String
+    func getAbout()   -> String?
+    func getBanner()   -> String?
+    func getDisplayName()   -> String?
+    func getLud06()   -> String?
+    func getLud16()   -> String?
+    func getName()   -> String?
+    func getNip05()   -> String?
+    func getPicture()   -> String?
+    func getWebsite()   -> String?
+    func setAbout(about: String)   -> Metadata
+    func setBanner(banner: String)  throws -> Metadata
+    func setDisplayName(displayName: String)   -> Metadata
+    func setLud06(lud06: String)   -> Metadata
+    func setLud16(lud16: String)   -> Metadata
+    func setName(name: String)   -> Metadata
+    func setNip05(nip05: String)   -> Metadata
+    func setPicture(picture: String)  throws -> Metadata
+    func setWebsite(website: String)  throws -> Metadata
+    
+}
+
+public class Metadata: MetadataProtocol {
+    fileprivate let pointer: UnsafeMutableRawPointer
+
+    // TODO: We'd like this to be `private` but for Swifty reasons,
+    // we can't implement `FfiConverter` without making this `required` and we can't
+    // make it `required` without making it `public`.
+    required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
+        self.pointer = pointer
+    }
+    public convenience init()  {
+        self.init(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_metadata_new($0)
+})
+    }
+
+    deinit {
+        try! rustCall { uniffi_nostr_fn_free_metadata(pointer, $0) }
+    }
+
+    
+
+    public static func fromJson(json: String) throws -> Metadata {
+        return Metadata(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_metadata_from_json(
+        FfiConverterString.lower(json),$0)
+})
+    }
+
+    
+
+    
+    
+
+    public func asJson()  -> String {
+        return try!  FfiConverterString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_as_json(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getAbout()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_about(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getBanner()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_banner(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getDisplayName()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_display_name(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getLud06()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_lud06(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getLud16()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_lud16(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getName()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_name(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getNip05()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_nip05(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getPicture()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_picture(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func getWebsite()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_get_website(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func setAbout(about: String)  -> Metadata {
+        return try!  FfiConverterTypeMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_set_about(self.pointer, 
+        FfiConverterString.lower(about),$0
+    )
+}
+        )
+    }
+
+    public func setBanner(banner: String) throws -> Metadata {
+        return try  FfiConverterTypeMetadata.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_metadata_set_banner(self.pointer, 
+        FfiConverterString.lower(banner),$0
+    )
+}
+        )
+    }
+
+    public func setDisplayName(displayName: String)  -> Metadata {
+        return try!  FfiConverterTypeMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_set_display_name(self.pointer, 
+        FfiConverterString.lower(displayName),$0
+    )
+}
+        )
+    }
+
+    public func setLud06(lud06: String)  -> Metadata {
+        return try!  FfiConverterTypeMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_set_lud06(self.pointer, 
+        FfiConverterString.lower(lud06),$0
+    )
+}
+        )
+    }
+
+    public func setLud16(lud16: String)  -> Metadata {
+        return try!  FfiConverterTypeMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_set_lud16(self.pointer, 
+        FfiConverterString.lower(lud16),$0
+    )
+}
+        )
+    }
+
+    public func setName(name: String)  -> Metadata {
+        return try!  FfiConverterTypeMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_set_name(self.pointer, 
+        FfiConverterString.lower(name),$0
+    )
+}
+        )
+    }
+
+    public func setNip05(nip05: String)  -> Metadata {
+        return try!  FfiConverterTypeMetadata.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_metadata_set_nip05(self.pointer, 
+        FfiConverterString.lower(nip05),$0
+    )
+}
+        )
+    }
+
+    public func setPicture(picture: String) throws -> Metadata {
+        return try  FfiConverterTypeMetadata.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_metadata_set_picture(self.pointer, 
+        FfiConverterString.lower(picture),$0
+    )
+}
+        )
+    }
+
+    public func setWebsite(website: String) throws -> Metadata {
+        return try  FfiConverterTypeMetadata.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_metadata_set_website(self.pointer, 
+        FfiConverterString.lower(website),$0
+    )
+}
+        )
+    }
+}
+
+public struct FfiConverterTypeMetadata: FfiConverter {
+    typealias FfiType = UnsafeMutableRawPointer
+    typealias SwiftType = Metadata
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> Metadata {
+        let v: UInt64 = try readInt(&buf)
+        // The Rust code won't compile if a pointer won't fit in a UInt64.
+        // We have to go via `UInt` because that's the thing that's the size of a pointer.
+        let ptr = UnsafeMutableRawPointer(bitPattern: UInt(truncatingIfNeeded: v))
+        if (ptr == nil) {
+            throw UniffiInternalError.unexpectedNullPointer
+        }
+        return try lift(ptr!)
+    }
+
+    public static func write(_ value: Metadata, into buf: inout [UInt8]) {
+        // This fiddling is because `Int` is the thing that's the same size as a pointer.
+        // The Rust code won't compile if a pointer won't fit in a `UInt64`.
+        writeInt(&buf, UInt64(bitPattern: Int64(Int(bitPattern: lower(value)))))
+    }
+
+    public static func lift(_ pointer: UnsafeMutableRawPointer) throws -> Metadata {
+        return Metadata(unsafeFromRawPointer: pointer)
+    }
+
+    public static func lower(_ value: Metadata) -> UnsafeMutableRawPointer {
+        return value.pointer
+    }
+}
+
+
+public func FfiConverterTypeMetadata_lift(_ pointer: UnsafeMutableRawPointer) throws -> Metadata {
+    return try FfiConverterTypeMetadata.lift(pointer)
+}
+
+public func FfiConverterTypeMetadata_lower(_ value: Metadata) -> UnsafeMutableRawPointer {
+    return FfiConverterTypeMetadata.lower(value)
+}
+
+
 public protocol NostrConnectURIProtocol {
-    func `publicKey`()   -> PublicKey
-    func `relayUrl`()   -> String
-    func `name`()   -> String
-    func `url`()   -> String?
-    func `description`()   -> String?
+    func description()   -> String?
+    func name()   -> String
+    func publicKey()   -> PublicKey
+    func relayUrl()   -> String
+    func url()   -> String?
     
 }
 
@@ -1981,10 +2170,10 @@ public class NostrConnectUri: NostrConnectURIProtocol {
 
     
 
-    public static func `fromString`(`uri`: String) throws -> NostrConnectUri {
+    public static func fromString(uri: String) throws -> NostrConnectUri {
         return NostrConnectUri(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_nostrconnecturi_from_string(
-        FfiConverterString.lower(`uri`),$0)
+        FfiConverterString.lower(uri),$0)
 })
     }
 
@@ -1993,29 +2182,18 @@ public class NostrConnectUri: NostrConnectURIProtocol {
     
     
 
-    public func `publicKey`()  -> PublicKey {
-        return try!  FfiConverterTypePublicKey.lift(
+    public func description()  -> String? {
+        return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_nostrconnecturi_public_key(self.pointer, $0
+    uniffi_nostr_fn_method_nostrconnecturi_description(self.pointer, $0
     )
 }
         )
     }
 
-    public func `relayUrl`()  -> String {
-        return try!  FfiConverterString.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_nostrconnecturi_relay_url(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `name`()  -> String {
+    public func name()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
@@ -2026,23 +2204,34 @@ public class NostrConnectUri: NostrConnectURIProtocol {
         )
     }
 
-    public func `url`()  -> String? {
-        return try!  FfiConverterOptionString.lift(
+    public func publicKey()  -> PublicKey {
+        return try!  FfiConverterTypePublicKey.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_nostrconnecturi_url(self.pointer, $0
+    uniffi_nostr_fn_method_nostrconnecturi_public_key(self.pointer, $0
     )
 }
         )
     }
 
-    public func `description`()  -> String? {
+    public func relayUrl()  -> String {
+        return try!  FfiConverterString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_nostrconnecturi_relay_url(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func url()  -> String? {
         return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_nostrconnecturi_description(self.pointer, $0
+    uniffi_nostr_fn_method_nostrconnecturi_url(self.pointer, $0
     )
 }
         )
@@ -2090,10 +2279,10 @@ public func FfiConverterTypeNostrConnectURI_lower(_ value: NostrConnectUri) -> U
 
 
 public protocol ProfileProtocol {
-    func `toBech32`()  throws -> String
-    func `toNostrUri`()  throws -> String
-    func `publicKey`()   -> PublicKey
-    func `relays`()   -> [String]
+    func publicKey()   -> PublicKey
+    func relays()   -> [String]
+    func toBech32()  throws -> String
+    func toNostrUri()  throws -> String
     
 }
 
@@ -2106,11 +2295,11 @@ public class Profile: ProfileProtocol {
     required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
         self.pointer = pointer
     }
-    public convenience init(`publicKey`: PublicKey, `relays`: [String])  {
+    public convenience init(publicKey: PublicKey, relays: [String])  {
         self.init(unsafeFromRawPointer: try! rustCall() {
     uniffi_nostr_fn_constructor_profile_new(
-        FfiConverterTypePublicKey.lower(`publicKey`),
-        FfiConverterSequenceString.lower(`relays`),$0)
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterSequenceString.lower(relays),$0)
 })
     }
 
@@ -2120,19 +2309,19 @@ public class Profile: ProfileProtocol {
 
     
 
-    public static func `fromBech32`(`bech32`: String) throws -> Profile {
+    public static func fromBech32(bech32: String) throws -> Profile {
         return Profile(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_profile_from_bech32(
-        FfiConverterString.lower(`bech32`),$0)
+        FfiConverterString.lower(bech32),$0)
 })
     }
 
     
 
-    public static func `fromNostrUri`(`uri`: String) throws -> Profile {
+    public static func fromNostrUri(uri: String) throws -> Profile {
         return Profile(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_profile_from_nostr_uri(
-        FfiConverterString.lower(`uri`),$0)
+        FfiConverterString.lower(uri),$0)
 })
     }
 
@@ -2141,27 +2330,7 @@ public class Profile: ProfileProtocol {
     
     
 
-    public func `toBech32`() throws -> String {
-        return try  FfiConverterString.lift(
-            try 
-    rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_method_profile_to_bech32(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `toNostrUri`() throws -> String {
-        return try  FfiConverterString.lift(
-            try 
-    rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_method_profile_to_nostr_uri(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `publicKey`()  -> PublicKey {
+    public func publicKey()  -> PublicKey {
         return try!  FfiConverterTypePublicKey.lift(
             try! 
     rustCall() {
@@ -2172,12 +2341,32 @@ public class Profile: ProfileProtocol {
         )
     }
 
-    public func `relays`()  -> [String] {
+    public func relays()  -> [String] {
         return try!  FfiConverterSequenceString.lift(
             try! 
     rustCall() {
     
     uniffi_nostr_fn_method_profile_relays(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func toBech32() throws -> String {
+        return try  FfiConverterString.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_profile_to_bech32(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func toNostrUri() throws -> String {
+        return try  FfiConverterString.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_profile_to_nostr_uri(self.pointer, $0
     )
 }
         )
@@ -2225,9 +2414,9 @@ public func FfiConverterTypeProfile_lower(_ value: Profile) -> UnsafeMutableRawP
 
 
 public protocol PublicKeyProtocol {
-    func `toHex`()   -> String
-    func `toBech32`()  throws -> String
-    func `toNostrUri`()  throws -> String
+    func toBech32()  throws -> String
+    func toHex()   -> String
+    func toNostrUri()  throws -> String
     
 }
 
@@ -2247,28 +2436,37 @@ public class PublicKey: PublicKeyProtocol {
 
     
 
-    public static func `fromHex`(`hex`: String) throws -> PublicKey {
-        return PublicKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_publickey_from_hex(
-        FfiConverterString.lower(`hex`),$0)
-})
-    }
-
-    
-
-    public static func `fromBech32`(`pk`: String) throws -> PublicKey {
+    public static func fromBech32(pk: String) throws -> PublicKey {
         return PublicKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_publickey_from_bech32(
-        FfiConverterString.lower(`pk`),$0)
+        FfiConverterString.lower(pk),$0)
 })
     }
 
     
 
-    public static func `fromNostrUri`(`uri`: String) throws -> PublicKey {
+    public static func fromBytes(pk: [UInt8]) throws -> PublicKey {
+        return PublicKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_publickey_from_bytes(
+        FfiConverterSequenceUInt8.lower(pk),$0)
+})
+    }
+
+    
+
+    public static func fromHex(hex: String) throws -> PublicKey {
+        return PublicKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_publickey_from_hex(
+        FfiConverterString.lower(hex),$0)
+})
+    }
+
+    
+
+    public static func fromNostrUri(uri: String) throws -> PublicKey {
         return PublicKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_publickey_from_nostr_uri(
-        FfiConverterString.lower(`uri`),$0)
+        FfiConverterString.lower(uri),$0)
 })
     }
 
@@ -2277,7 +2475,17 @@ public class PublicKey: PublicKeyProtocol {
     
     
 
-    public func `toHex`()  -> String {
+    public func toBech32() throws -> String {
+        return try  FfiConverterString.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_publickey_to_bech32(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func toHex()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
@@ -2288,17 +2496,7 @@ public class PublicKey: PublicKeyProtocol {
         )
     }
 
-    public func `toBech32`() throws -> String {
-        return try  FfiConverterString.lift(
-            try 
-    rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_method_publickey_to_bech32(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `toNostrUri`() throws -> String {
+    public func toNostrUri() throws -> String {
         return try  FfiConverterString.lift(
             try 
     rustCallWithError(FfiConverterTypeNostrError.lift) {
@@ -2350,13 +2548,13 @@ public func FfiConverterTypePublicKey_lower(_ value: PublicKey) -> UnsafeMutable
 
 
 public protocol RelayInformationDocumentProtocol {
-    func `name`()   -> String?
-    func `description`()   -> String?
-    func `pubkey`()   -> String?
-    func `contact`()   -> String?
-    func `supportedNips`()   -> [UInt16]?
-    func `software`()   -> String?
-    func `version`()   -> String?
+    func contact()   -> String?
+    func description()   -> String?
+    func name()   -> String?
+    func pubkey()   -> String?
+    func software()   -> String?
+    func supportedNips()   -> [UInt16]?
+    func version()   -> String?
     
 }
 
@@ -2376,11 +2574,11 @@ public class RelayInformationDocument: RelayInformationDocumentProtocol {
 
     
 
-    public static func `get`(`url`: String, `proxy`: String?) throws -> RelayInformationDocument {
+    public static func get(url: String, proxy: String?) throws -> RelayInformationDocument {
         return RelayInformationDocument(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_relayinformationdocument_get(
-        FfiConverterString.lower(`url`),
-        FfiConverterOptionString.lower(`proxy`),$0)
+        FfiConverterString.lower(url),
+        FfiConverterOptionString.lower(proxy),$0)
 })
     }
 
@@ -2389,40 +2587,7 @@ public class RelayInformationDocument: RelayInformationDocumentProtocol {
     
     
 
-    public func `name`()  -> String? {
-        return try!  FfiConverterOptionString.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_relayinformationdocument_name(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `description`()  -> String? {
-        return try!  FfiConverterOptionString.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_relayinformationdocument_description(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `pubkey`()  -> String? {
-        return try!  FfiConverterOptionString.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_relayinformationdocument_pubkey(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `contact`()  -> String? {
+    public func contact()  -> String? {
         return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
@@ -2433,18 +2598,40 @@ public class RelayInformationDocument: RelayInformationDocumentProtocol {
         )
     }
 
-    public func `supportedNips`()  -> [UInt16]? {
-        return try!  FfiConverterOptionSequenceUInt16.lift(
+    public func description()  -> String? {
+        return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_relayinformationdocument_supported_nips(self.pointer, $0
+    uniffi_nostr_fn_method_relayinformationdocument_description(self.pointer, $0
     )
 }
         )
     }
 
-    public func `software`()  -> String? {
+    public func name()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_relayinformationdocument_name(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func pubkey()  -> String? {
+        return try!  FfiConverterOptionString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_relayinformationdocument_pubkey(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func software()  -> String? {
         return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
@@ -2455,7 +2642,18 @@ public class RelayInformationDocument: RelayInformationDocumentProtocol {
         )
     }
 
-    public func `version`()  -> String? {
+    public func supportedNips()  -> [UInt16]? {
+        return try!  FfiConverterOptionSequenceUInt16.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_relayinformationdocument_supported_nips(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func version()  -> String? {
         return try!  FfiConverterOptionString.lift(
             try! 
     rustCall() {
@@ -2508,8 +2706,8 @@ public func FfiConverterTypeRelayInformationDocument_lower(_ value: RelayInforma
 
 
 public protocol SecretKeyProtocol {
-    func `toHex`()   -> String
-    func `toBech32`()  throws -> String
+    func toBech32()  throws -> String
+    func toHex()   -> String
     
 }
 
@@ -2529,19 +2727,28 @@ public class SecretKey: SecretKeyProtocol {
 
     
 
-    public static func `fromHex`(`hex`: String) throws -> SecretKey {
-        return SecretKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_secretkey_from_hex(
-        FfiConverterString.lower(`hex`),$0)
-})
-    }
-
-    
-
-    public static func `fromBech32`(`pk`: String) throws -> SecretKey {
+    public static func fromBech32(sk: String) throws -> SecretKey {
         return SecretKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_secretkey_from_bech32(
-        FfiConverterString.lower(`pk`),$0)
+        FfiConverterString.lower(sk),$0)
+})
+    }
+
+    
+
+    public static func fromBytes(sk: [UInt8]) throws -> SecretKey {
+        return SecretKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_secretkey_from_bytes(
+        FfiConverterSequenceUInt8.lower(sk),$0)
+})
+    }
+
+    
+
+    public static func fromHex(hex: String) throws -> SecretKey {
+        return SecretKey(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_secretkey_from_hex(
+        FfiConverterString.lower(hex),$0)
 })
     }
 
@@ -2550,22 +2757,22 @@ public class SecretKey: SecretKeyProtocol {
     
     
 
-    public func `toHex`()  -> String {
-        return try!  FfiConverterString.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_secretkey_to_hex(self.pointer, $0
+    public func toBech32() throws -> String {
+        return try  FfiConverterString.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_secretkey_to_bech32(self.pointer, $0
     )
 }
         )
     }
 
-    public func `toBech32`() throws -> String {
-        return try  FfiConverterString.lift(
-            try 
-    rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_method_secretkey_to_bech32(self.pointer, $0
+    public func toHex()  -> String {
+        return try!  FfiConverterString.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_secretkey_to_hex(self.pointer, $0
     )
 }
         )
@@ -2613,9 +2820,9 @@ public func FfiConverterTypeSecretKey_lower(_ value: SecretKey) -> UnsafeMutable
 
 
 public protocol TagProtocol {
-    func `asEnum`()   -> TagEnum
-    func `asVec`()   -> [String]
-    func `kind`()   -> TagKind
+    func asEnum()   -> TagEnum
+    func asVec()   -> [String]
+    func kind()   -> TagKind
     
 }
 
@@ -2635,19 +2842,19 @@ public class Tag: TagProtocol {
 
     
 
-    public static func `parse`(`data`: [String]) throws -> Tag {
-        return Tag(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_constructor_tag_parse(
-        FfiConverterSequenceString.lower(`data`),$0)
-})
-    }
-
-    
-
-    public static func `fromEnum`(`e`: TagEnum) throws -> Tag {
+    public static func fromEnum(e: TagEnum) throws -> Tag {
         return Tag(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_tag_from_enum(
-        FfiConverterTypeTagEnum.lower(`e`),$0)
+        FfiConverterTypeTagEnum.lower(e),$0)
+})
+    }
+
+    
+
+    public static func parse(data: [String]) throws -> Tag {
+        return Tag(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_constructor_tag_parse(
+        FfiConverterSequenceString.lower(data),$0)
 })
     }
 
@@ -2656,7 +2863,7 @@ public class Tag: TagProtocol {
     
     
 
-    public func `asEnum`()  -> TagEnum {
+    public func asEnum()  -> TagEnum {
         return try!  FfiConverterTypeTagEnum.lift(
             try! 
     rustCall() {
@@ -2667,7 +2874,7 @@ public class Tag: TagProtocol {
         )
     }
 
-    public func `asVec`()  -> [String] {
+    public func asVec()  -> [String] {
         return try!  FfiConverterSequenceString.lift(
             try! 
     rustCall() {
@@ -2678,7 +2885,7 @@ public class Tag: TagProtocol {
         )
     }
 
-    public func `kind`()  -> TagKind {
+    public func kind()  -> TagKind {
         return try!  FfiConverterTypeTagKind.lift(
             try! 
     rustCall() {
@@ -2731,8 +2938,8 @@ public func FfiConverterTypeTag_lower(_ value: Tag) -> UnsafeMutableRawPointer {
 
 
 public protocol TimestampProtocol {
-    func `asSecs`()   -> UInt64
-    func `toHumanDatetime`()   -> String
+    func asSecs()   -> UInt64
+    func toHumanDatetime()   -> String
     
 }
 
@@ -2752,7 +2959,16 @@ public class Timestamp: TimestampProtocol {
 
     
 
-    public static func `now`()  -> Timestamp {
+    public static func fromSecs(secs: UInt64)  -> Timestamp {
+        return Timestamp(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_timestamp_from_secs(
+        FfiConverterUInt64.lower(secs),$0)
+})
+    }
+
+    
+
+    public static func now()  -> Timestamp {
         return Timestamp(unsafeFromRawPointer: try! rustCall() {
     uniffi_nostr_fn_constructor_timestamp_now($0)
 })
@@ -2760,19 +2976,10 @@ public class Timestamp: TimestampProtocol {
 
     
 
-    public static func `fromSecs`(`secs`: UInt64)  -> Timestamp {
-        return Timestamp(unsafeFromRawPointer: try! rustCall() {
-    uniffi_nostr_fn_constructor_timestamp_from_secs(
-        FfiConverterUInt64.lower(`secs`),$0)
-})
-    }
-
-    
-
     
     
 
-    public func `asSecs`()  -> UInt64 {
+    public func asSecs()  -> UInt64 {
         return try!  FfiConverterUInt64.lift(
             try! 
     rustCall() {
@@ -2783,7 +2990,7 @@ public class Timestamp: TimestampProtocol {
         )
     }
 
-    public func `toHumanDatetime`()  -> String {
+    public func toHumanDatetime()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
@@ -2836,15 +3043,15 @@ public func FfiConverterTypeTimestamp_lower(_ value: Timestamp) -> UnsafeMutable
 
 
 public protocol UnsignedEventProtocol {
-    func `id`()   -> EventId
-    func `pubkey`()   -> PublicKey
-    func `createdAt`()   -> Timestamp
-    func `kind`()   -> UInt64
-    func `tags`()   -> [Tag]
-    func `content`()   -> String
-    func `sign`(`keys`: Keys)  throws -> Event
-    func `addSignature`(`sig`: String)  throws -> Event
-    func `asJson`()   -> String
+    func addSignature(sig: String)  throws -> Event
+    func asJson()   -> String
+    func content()   -> String
+    func createdAt()   -> Timestamp
+    func id()   -> EventId
+    func kind()   -> UInt64
+    func pubkey()   -> PublicKey
+    func sign(keys: Keys)  throws -> Event
+    func tags()   -> [Tag]
     
 }
 
@@ -2864,10 +3071,10 @@ public class UnsignedEvent: UnsignedEventProtocol {
 
     
 
-    public static func `fromJson`(`json`: String) throws -> UnsignedEvent {
+    public static func fromJson(json: String) throws -> UnsignedEvent {
         return UnsignedEvent(unsafeFromRawPointer: try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_constructor_unsignedevent_from_json(
-        FfiConverterString.lower(`json`),$0)
+        FfiConverterString.lower(json),$0)
 })
     }
 
@@ -2876,62 +3083,29 @@ public class UnsignedEvent: UnsignedEventProtocol {
     
     
 
-    public func `id`()  -> EventId {
-        return try!  FfiConverterTypeEventId.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_unsignedevent_id(self.pointer, $0
+    public func addSignature(sig: String) throws -> Event {
+        return try  FfiConverterTypeEvent.lift(
+            try 
+    rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_method_unsignedevent_add_signature(self.pointer, 
+        FfiConverterString.lower(sig),$0
     )
 }
         )
     }
 
-    public func `pubkey`()  -> PublicKey {
-        return try!  FfiConverterTypePublicKey.lift(
+    public func asJson()  -> String {
+        return try!  FfiConverterString.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_unsignedevent_pubkey(self.pointer, $0
+    uniffi_nostr_fn_method_unsignedevent_as_json(self.pointer, $0
     )
 }
         )
     }
 
-    public func `createdAt`()  -> Timestamp {
-        return try!  FfiConverterTypeTimestamp.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_unsignedevent_created_at(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `kind`()  -> UInt64 {
-        return try!  FfiConverterUInt64.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_unsignedevent_kind(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `tags`()  -> [Tag] {
-        return try!  FfiConverterSequenceTypeTag.lift(
-            try! 
-    rustCall() {
-    
-    uniffi_nostr_fn_method_unsignedevent_tags(self.pointer, $0
-    )
-}
-        )
-    }
-
-    public func `content`()  -> String {
+    public func content()  -> String {
         return try!  FfiConverterString.lift(
             try! 
     rustCall() {
@@ -2942,34 +3116,67 @@ public class UnsignedEvent: UnsignedEventProtocol {
         )
     }
 
-    public func `sign`(`keys`: Keys) throws -> Event {
+    public func createdAt()  -> Timestamp {
+        return try!  FfiConverterTypeTimestamp.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_unsignedevent_created_at(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func id()  -> EventId {
+        return try!  FfiConverterTypeEventId.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_unsignedevent_id(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func kind()  -> UInt64 {
+        return try!  FfiConverterUInt64.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_unsignedevent_kind(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func pubkey()  -> PublicKey {
+        return try!  FfiConverterTypePublicKey.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_unsignedevent_pubkey(self.pointer, $0
+    )
+}
+        )
+    }
+
+    public func sign(keys: Keys) throws -> Event {
         return try  FfiConverterTypeEvent.lift(
             try 
     rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_method_unsignedevent_sign(self.pointer, 
-        FfiConverterTypeKeys.lower(`keys`),$0
+        FfiConverterTypeKeys.lower(keys),$0
     )
 }
         )
     }
 
-    public func `addSignature`(`sig`: String) throws -> Event {
-        return try  FfiConverterTypeEvent.lift(
-            try 
-    rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_method_unsignedevent_add_signature(self.pointer, 
-        FfiConverterString.lower(`sig`),$0
-    )
-}
-        )
-    }
-
-    public func `asJson`()  -> String {
-        return try!  FfiConverterString.lift(
+    public func tags()  -> [Tag] {
+        return try!  FfiConverterSequenceTypeTag.lift(
             try! 
     rustCall() {
     
-    uniffi_nostr_fn_method_unsignedevent_as_json(self.pointer, $0
+    uniffi_nostr_fn_method_unsignedevent_tags(self.pointer, $0
     )
 }
         )
@@ -3015,36 +3222,146 @@ public func FfiConverterTypeUnsignedEvent_lower(_ value: UnsignedEvent) -> Unsaf
     return FfiConverterTypeUnsignedEvent.lower(value)
 }
 
+
+public protocol ZapRequestDataProtocol {
+    func amount(amount: UInt64)   -> ZapRequestData
+    func eventId(eventId: EventId)   -> ZapRequestData
+    func lnurl(lnurl: String)   -> ZapRequestData
+    
+}
+
+public class ZapRequestData: ZapRequestDataProtocol {
+    fileprivate let pointer: UnsafeMutableRawPointer
+
+    // TODO: We'd like this to be `private` but for Swifty reasons,
+    // we can't implement `FfiConverter` without making this `required` and we can't
+    // make it `required` without making it `public`.
+    required init(unsafeFromRawPointer pointer: UnsafeMutableRawPointer) {
+        self.pointer = pointer
+    }
+    public convenience init(publicKey: PublicKey, relays: [String])  {
+        self.init(unsafeFromRawPointer: try! rustCall() {
+    uniffi_nostr_fn_constructor_zaprequestdata_new(
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterSequenceString.lower(relays),$0)
+})
+    }
+
+    deinit {
+        try! rustCall { uniffi_nostr_fn_free_zaprequestdata(pointer, $0) }
+    }
+
+    
+
+    
+    
+
+    public func amount(amount: UInt64)  -> ZapRequestData {
+        return try!  FfiConverterTypeZapRequestData.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_zaprequestdata_amount(self.pointer, 
+        FfiConverterUInt64.lower(amount),$0
+    )
+}
+        )
+    }
+
+    public func eventId(eventId: EventId)  -> ZapRequestData {
+        return try!  FfiConverterTypeZapRequestData.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_zaprequestdata_event_id(self.pointer, 
+        FfiConverterTypeEventId.lower(eventId),$0
+    )
+}
+        )
+    }
+
+    public func lnurl(lnurl: String)  -> ZapRequestData {
+        return try!  FfiConverterTypeZapRequestData.lift(
+            try! 
+    rustCall() {
+    
+    uniffi_nostr_fn_method_zaprequestdata_lnurl(self.pointer, 
+        FfiConverterString.lower(lnurl),$0
+    )
+}
+        )
+    }
+}
+
+public struct FfiConverterTypeZapRequestData: FfiConverter {
+    typealias FfiType = UnsafeMutableRawPointer
+    typealias SwiftType = ZapRequestData
+
+    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> ZapRequestData {
+        let v: UInt64 = try readInt(&buf)
+        // The Rust code won't compile if a pointer won't fit in a UInt64.
+        // We have to go via `UInt` because that's the thing that's the size of a pointer.
+        let ptr = UnsafeMutableRawPointer(bitPattern: UInt(truncatingIfNeeded: v))
+        if (ptr == nil) {
+            throw UniffiInternalError.unexpectedNullPointer
+        }
+        return try lift(ptr!)
+    }
+
+    public static func write(_ value: ZapRequestData, into buf: inout [UInt8]) {
+        // This fiddling is because `Int` is the thing that's the same size as a pointer.
+        // The Rust code won't compile if a pointer won't fit in a `UInt64`.
+        writeInt(&buf, UInt64(bitPattern: Int64(Int(bitPattern: lower(value)))))
+    }
+
+    public static func lift(_ pointer: UnsafeMutableRawPointer) throws -> ZapRequestData {
+        return ZapRequestData(unsafeFromRawPointer: pointer)
+    }
+
+    public static func lower(_ value: ZapRequestData) -> UnsafeMutableRawPointer {
+        return value.pointer
+    }
+}
+
+
+public func FfiConverterTypeZapRequestData_lift(_ pointer: UnsafeMutableRawPointer) throws -> ZapRequestData {
+    return try FfiConverterTypeZapRequestData.lift(pointer)
+}
+
+public func FfiConverterTypeZapRequestData_lower(_ value: ZapRequestData) -> UnsafeMutableRawPointer {
+    return FfiConverterTypeZapRequestData.lower(value)
+}
+
 // Note that we don't yet support `indirect` for enums.
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 public enum Alphabet {
     
-    case `a`
-    case `b`
-    case `c`
-    case `d`
-    case `e`
-    case `f`
-    case `g`
-    case `h`
-    case `i`
-    case `j`
-    case `k`
-    case `l`
-    case `m`
-    case `n`
-    case `o`
-    case `p`
-    case `q`
-    case `r`
-    case `s`
-    case `t`
-    case `u`
-    case `v`
-    case `w`
-    case `x`
-    case `y`
-    case `z`
+    case a
+    case b
+    case c
+    case d
+    case e
+    case f
+    case g
+    case h
+    case i
+    case j
+    case k
+    case l
+    case m
+    case n
+    case o
+    case p
+    case q
+    case r
+    case s
+    case t
+    case u
+    case v
+    case w
+    case x
+    case y
+    case z
 }
 
 public struct FfiConverterTypeAlphabet: FfiConverterRustBuffer {
@@ -3054,57 +3371,57 @@ public struct FfiConverterTypeAlphabet: FfiConverterRustBuffer {
         let variant: Int32 = try readInt(&buf)
         switch variant {
         
-        case 1: return .`a`
+        case 1: return .a
         
-        case 2: return .`b`
+        case 2: return .b
         
-        case 3: return .`c`
+        case 3: return .c
         
-        case 4: return .`d`
+        case 4: return .d
         
-        case 5: return .`e`
+        case 5: return .e
         
-        case 6: return .`f`
+        case 6: return .f
         
-        case 7: return .`g`
+        case 7: return .g
         
-        case 8: return .`h`
+        case 8: return .h
         
-        case 9: return .`i`
+        case 9: return .i
         
-        case 10: return .`j`
+        case 10: return .j
         
-        case 11: return .`k`
+        case 11: return .k
         
-        case 12: return .`l`
+        case 12: return .l
         
-        case 13: return .`m`
+        case 13: return .m
         
-        case 14: return .`n`
+        case 14: return .n
         
-        case 15: return .`o`
+        case 15: return .o
         
-        case 16: return .`p`
+        case 16: return .p
         
-        case 17: return .`q`
+        case 17: return .q
         
-        case 18: return .`r`
+        case 18: return .r
         
-        case 19: return .`s`
+        case 19: return .s
         
-        case 20: return .`t`
+        case 20: return .t
         
-        case 21: return .`u`
+        case 21: return .u
         
-        case 22: return .`v`
+        case 22: return .v
         
-        case 23: return .`w`
+        case 23: return .w
         
-        case 24: return .`x`
+        case 24: return .x
         
-        case 25: return .`y`
+        case 25: return .y
         
-        case 26: return .`z`
+        case 26: return .z
         
         default: throw UniffiInternalError.unexpectedEnumCase
         }
@@ -3114,107 +3431,107 @@ public struct FfiConverterTypeAlphabet: FfiConverterRustBuffer {
         switch value {
         
         
-        case .`a`:
+        case .a:
             writeInt(&buf, Int32(1))
         
         
-        case .`b`:
+        case .b:
             writeInt(&buf, Int32(2))
         
         
-        case .`c`:
+        case .c:
             writeInt(&buf, Int32(3))
         
         
-        case .`d`:
+        case .d:
             writeInt(&buf, Int32(4))
         
         
-        case .`e`:
+        case .e:
             writeInt(&buf, Int32(5))
         
         
-        case .`f`:
+        case .f:
             writeInt(&buf, Int32(6))
         
         
-        case .`g`:
+        case .g:
             writeInt(&buf, Int32(7))
         
         
-        case .`h`:
+        case .h:
             writeInt(&buf, Int32(8))
         
         
-        case .`i`:
+        case .i:
             writeInt(&buf, Int32(9))
         
         
-        case .`j`:
+        case .j:
             writeInt(&buf, Int32(10))
         
         
-        case .`k`:
+        case .k:
             writeInt(&buf, Int32(11))
         
         
-        case .`l`:
+        case .l:
             writeInt(&buf, Int32(12))
         
         
-        case .`m`:
+        case .m:
             writeInt(&buf, Int32(13))
         
         
-        case .`n`:
+        case .n:
             writeInt(&buf, Int32(14))
         
         
-        case .`o`:
+        case .o:
             writeInt(&buf, Int32(15))
         
         
-        case .`p`:
+        case .p:
             writeInt(&buf, Int32(16))
         
         
-        case .`q`:
+        case .q:
             writeInt(&buf, Int32(17))
         
         
-        case .`r`:
+        case .r:
             writeInt(&buf, Int32(18))
         
         
-        case .`s`:
+        case .s:
             writeInt(&buf, Int32(19))
         
         
-        case .`t`:
+        case .t:
             writeInt(&buf, Int32(20))
         
         
-        case .`u`:
+        case .u:
             writeInt(&buf, Int32(21))
         
         
-        case .`v`:
+        case .v:
             writeInt(&buf, Int32(22))
         
         
-        case .`w`:
+        case .w:
             writeInt(&buf, Int32(23))
         
         
-        case .`x`:
+        case .x:
             writeInt(&buf, Int32(24))
         
         
-        case .`y`:
+        case .y:
             writeInt(&buf, Int32(25))
         
         
-        case .`z`:
+        case .z:
             writeInt(&buf, Int32(26))
         
         }
@@ -3239,11 +3556,11 @@ extension Alphabet: Equatable, Hashable {}
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 public enum ClientMessage {
     
-    case `ev`(`event`: String)
-    case `req`(`subscriptionId`: String, `filters`: [String])
-    case `count`(`subscriptionId`: String, `filters`: [String])
-    case `close`(`subscriptionId`: String)
-    case `auth`(`event`: String)
+    case ev(event: String)
+    case req(subscriptionId: String, filters: [String])
+    case count(subscriptionId: String, filters: [String])
+    case close(subscriptionId: String)
+    case auth(event: String)
 }
 
 public struct FfiConverterTypeClientMessage: FfiConverterRustBuffer {
@@ -3253,26 +3570,26 @@ public struct FfiConverterTypeClientMessage: FfiConverterRustBuffer {
         let variant: Int32 = try readInt(&buf)
         switch variant {
         
-        case 1: return .`ev`(
-            `event`: try FfiConverterString.read(from: &buf)
+        case 1: return .ev(
+            event: try FfiConverterString.read(from: &buf)
         )
         
-        case 2: return .`req`(
-            `subscriptionId`: try FfiConverterString.read(from: &buf), 
-            `filters`: try FfiConverterSequenceString.read(from: &buf)
+        case 2: return .req(
+            subscriptionId: try FfiConverterString.read(from: &buf), 
+            filters: try FfiConverterSequenceString.read(from: &buf)
         )
         
-        case 3: return .`count`(
-            `subscriptionId`: try FfiConverterString.read(from: &buf), 
-            `filters`: try FfiConverterSequenceString.read(from: &buf)
+        case 3: return .count(
+            subscriptionId: try FfiConverterString.read(from: &buf), 
+            filters: try FfiConverterSequenceString.read(from: &buf)
         )
         
-        case 4: return .`close`(
-            `subscriptionId`: try FfiConverterString.read(from: &buf)
+        case 4: return .close(
+            subscriptionId: try FfiConverterString.read(from: &buf)
         )
         
-        case 5: return .`auth`(
-            `event`: try FfiConverterString.read(from: &buf)
+        case 5: return .auth(
+            event: try FfiConverterString.read(from: &buf)
         )
         
         default: throw UniffiInternalError.unexpectedEnumCase
@@ -3283,31 +3600,31 @@ public struct FfiConverterTypeClientMessage: FfiConverterRustBuffer {
         switch value {
         
         
-        case let .`ev`(`event`):
+        case let .ev(event):
             writeInt(&buf, Int32(1))
-            FfiConverterString.write(`event`, into: &buf)
+            FfiConverterString.write(event, into: &buf)
             
         
-        case let .`req`(`subscriptionId`,`filters`):
+        case let .req(subscriptionId,filters):
             writeInt(&buf, Int32(2))
-            FfiConverterString.write(`subscriptionId`, into: &buf)
-            FfiConverterSequenceString.write(`filters`, into: &buf)
+            FfiConverterString.write(subscriptionId, into: &buf)
+            FfiConverterSequenceString.write(filters, into: &buf)
             
         
-        case let .`count`(`subscriptionId`,`filters`):
+        case let .count(subscriptionId,filters):
             writeInt(&buf, Int32(3))
-            FfiConverterString.write(`subscriptionId`, into: &buf)
-            FfiConverterSequenceString.write(`filters`, into: &buf)
+            FfiConverterString.write(subscriptionId, into: &buf)
+            FfiConverterSequenceString.write(filters, into: &buf)
             
         
-        case let .`close`(`subscriptionId`):
+        case let .close(subscriptionId):
             writeInt(&buf, Int32(4))
-            FfiConverterString.write(`subscriptionId`, into: &buf)
+            FfiConverterString.write(subscriptionId, into: &buf)
             
         
-        case let .`auth`(`event`):
+        case let .auth(event):
             writeInt(&buf, Int32(5))
-            FfiConverterString.write(`event`, into: &buf)
+            FfiConverterString.write(event, into: &buf)
             
         }
     }
@@ -3331,7 +3648,7 @@ public enum NostrError {
 
     
     
-    case Generic(`err`: String)
+    case Generic(err: String)
 
     fileprivate static func uniffiErrorHandler(_ error: RustBuffer) throws -> Error {
         return try FfiConverterTypeNostrError.lift(error)
@@ -3350,7 +3667,7 @@ public struct FfiConverterTypeNostrError: FfiConverterRustBuffer {
 
         
         case 1: return .Generic(
-            `err`: try FfiConverterString.read(from: &buf)
+            err: try FfiConverterString.read(from: &buf)
             )
 
          default: throw UniffiInternalError.unexpectedEnumCase
@@ -3364,9 +3681,9 @@ public struct FfiConverterTypeNostrError: FfiConverterRustBuffer {
 
         
         
-        case let .Generic(`err`):
+        case let .Generic(err):
             writeInt(&buf, Int32(1))
-            FfiConverterString.write(`err`, into: &buf)
+            FfiConverterString.write(err, into: &buf)
             
         }
     }
@@ -3381,12 +3698,14 @@ extension NostrError: Error { }
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 public enum RelayMessage {
     
-    case `ev`(`subscriptionId`: String, `event`: String)
-    case `notice`(`message`: String)
-    case `endOfStoredEvents`(`subscriptionId`: String)
-    case `ok`(`eventId`: String, `status`: Bool, `message`: String)
-    case `auth`(`challenge`: String)
-    case `count`(`subscriptionId`: String, `count`: UInt64)
+    case ev(subscriptionId: String, event: String)
+    case notice(message: String)
+    case endOfStoredEvents(subscriptionId: String)
+    case ok(eventId: String, status: Bool, message: String)
+    case auth(challenge: String)
+    case count(subscriptionId: String, count: UInt64)
+    case negMsg(subscriptionId: String, message: String)
+    case negErr(subscriptionId: String, code: String)
 }
 
 public struct FfiConverterTypeRelayMessage: FfiConverterRustBuffer {
@@ -3396,32 +3715,42 @@ public struct FfiConverterTypeRelayMessage: FfiConverterRustBuffer {
         let variant: Int32 = try readInt(&buf)
         switch variant {
         
-        case 1: return .`ev`(
-            `subscriptionId`: try FfiConverterString.read(from: &buf), 
-            `event`: try FfiConverterString.read(from: &buf)
+        case 1: return .ev(
+            subscriptionId: try FfiConverterString.read(from: &buf), 
+            event: try FfiConverterString.read(from: &buf)
         )
         
-        case 2: return .`notice`(
-            `message`: try FfiConverterString.read(from: &buf)
+        case 2: return .notice(
+            message: try FfiConverterString.read(from: &buf)
         )
         
-        case 3: return .`endOfStoredEvents`(
-            `subscriptionId`: try FfiConverterString.read(from: &buf)
+        case 3: return .endOfStoredEvents(
+            subscriptionId: try FfiConverterString.read(from: &buf)
         )
         
-        case 4: return .`ok`(
-            `eventId`: try FfiConverterString.read(from: &buf), 
-            `status`: try FfiConverterBool.read(from: &buf), 
-            `message`: try FfiConverterString.read(from: &buf)
+        case 4: return .ok(
+            eventId: try FfiConverterString.read(from: &buf), 
+            status: try FfiConverterBool.read(from: &buf), 
+            message: try FfiConverterString.read(from: &buf)
         )
         
-        case 5: return .`auth`(
-            `challenge`: try FfiConverterString.read(from: &buf)
+        case 5: return .auth(
+            challenge: try FfiConverterString.read(from: &buf)
         )
         
-        case 6: return .`count`(
-            `subscriptionId`: try FfiConverterString.read(from: &buf), 
-            `count`: try FfiConverterUInt64.read(from: &buf)
+        case 6: return .count(
+            subscriptionId: try FfiConverterString.read(from: &buf), 
+            count: try FfiConverterUInt64.read(from: &buf)
+        )
+        
+        case 7: return .negMsg(
+            subscriptionId: try FfiConverterString.read(from: &buf), 
+            message: try FfiConverterString.read(from: &buf)
+        )
+        
+        case 8: return .negErr(
+            subscriptionId: try FfiConverterString.read(from: &buf), 
+            code: try FfiConverterString.read(from: &buf)
         )
         
         default: throw UniffiInternalError.unexpectedEnumCase
@@ -3432,38 +3761,50 @@ public struct FfiConverterTypeRelayMessage: FfiConverterRustBuffer {
         switch value {
         
         
-        case let .`ev`(`subscriptionId`,`event`):
+        case let .ev(subscriptionId,event):
             writeInt(&buf, Int32(1))
-            FfiConverterString.write(`subscriptionId`, into: &buf)
-            FfiConverterString.write(`event`, into: &buf)
+            FfiConverterString.write(subscriptionId, into: &buf)
+            FfiConverterString.write(event, into: &buf)
             
         
-        case let .`notice`(`message`):
+        case let .notice(message):
             writeInt(&buf, Int32(2))
-            FfiConverterString.write(`message`, into: &buf)
+            FfiConverterString.write(message, into: &buf)
             
         
-        case let .`endOfStoredEvents`(`subscriptionId`):
+        case let .endOfStoredEvents(subscriptionId):
             writeInt(&buf, Int32(3))
-            FfiConverterString.write(`subscriptionId`, into: &buf)
+            FfiConverterString.write(subscriptionId, into: &buf)
             
         
-        case let .`ok`(`eventId`,`status`,`message`):
+        case let .ok(eventId,status,message):
             writeInt(&buf, Int32(4))
-            FfiConverterString.write(`eventId`, into: &buf)
-            FfiConverterBool.write(`status`, into: &buf)
-            FfiConverterString.write(`message`, into: &buf)
+            FfiConverterString.write(eventId, into: &buf)
+            FfiConverterBool.write(status, into: &buf)
+            FfiConverterString.write(message, into: &buf)
             
         
-        case let .`auth`(`challenge`):
+        case let .auth(challenge):
             writeInt(&buf, Int32(5))
-            FfiConverterString.write(`challenge`, into: &buf)
+            FfiConverterString.write(challenge, into: &buf)
             
         
-        case let .`count`(`subscriptionId`,`count`):
+        case let .count(subscriptionId,count):
             writeInt(&buf, Int32(6))
-            FfiConverterString.write(`subscriptionId`, into: &buf)
-            FfiConverterUInt64.write(`count`, into: &buf)
+            FfiConverterString.write(subscriptionId, into: &buf)
+            FfiConverterUInt64.write(count, into: &buf)
+            
+        
+        case let .negMsg(subscriptionId,message):
+            writeInt(&buf, Int32(7))
+            FfiConverterString.write(subscriptionId, into: &buf)
+            FfiConverterString.write(message, into: &buf)
+            
+        
+        case let .negErr(subscriptionId,code):
+            writeInt(&buf, Int32(8))
+            FfiConverterString.write(subscriptionId, into: &buf)
+            FfiConverterString.write(code, into: &buf)
             
         }
     }
@@ -3487,57 +3828,59 @@ extension RelayMessage: Equatable, Hashable {}
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 public enum TagEnum {
     
-    case `unknown`(`kind`: TagKind, `data`: [String])
-    case `e`(`eventId`: String, `relayUrl`: String?, `marker`: String?)
-    case `pubKey`(`publicKey`: String, `relayUrl`: String?)
-    case `eventReport`(`eventId`: String, `report`: String)
-    case `pubKeyReport`(`publicKey`: String, `report`: String)
-    case `pubKeyLiveEvent`(`pk`: String, `relayUrl`: String?, `marker`: String, `proof`: String?)
-    case `reference`(`reference`: String)
-    case `relayMetadata`(`relayUrl`: String, `rw`: String?)
-    case `hashtag`(`hashtag`: String)
-    case `geohash`(`geohash`: String)
-    case `identifier`(`identifier`: String)
-    case `externalIdentity`(`identity`: String, `proof`: String)
-    case `a`(`kind`: UInt64, `publicKey`: String, `identifier`: String, `relayUrl`: String?)
-    case `relayUrl`(`relayUrl`: String)
-    case `contactList`(`pk`: String, `relayUrl`: String?, `alias`: String?)
-    case `pow`(`nonce`: String, `difficulty`: UInt8)
-    case `delegation`(`delegatorPk`: String, `conditions`: String, `sig`: String)
-    case `contentWarning`(`reason`: String?)
-    case `expiration`(`timestamp`: UInt64)
-    case `subject`(`subject`: String)
-    case `challenge`(`challenge`: String)
-    case `title`(`title`: String)
-    case `image`(`url`: String, `dimensions`: String?)
-    case `thumb`(`url`: String, `dimensions`: String?)
-    case `summary`(`summary`: String)
-    case `description`(`desc`: String)
-    case `bolt11`(`bolt11`: String)
-    case `preimage`(`preimage`: String)
-    case `relays`(`urls`: [String])
-    case `amount`(`amount`: UInt64)
-    case `lnurl`(`lnurl`: String)
-    case `name`(`name`: String)
-    case `publishedAt`(`timestamp`: UInt64)
-    case `url`(`url`: String)
-    case `mimeType`(`mime`: String)
-    case `aes256Gcm`(`key`: String, `iv`: String)
-    case `sha256`(`hash`: String)
-    case `size`(`size`: UInt64)
-    case `dim`(`dimensions`: String)
-    case `magnet`(`uri`: String)
-    case `blurhash`(`blurhash`: String)
-    case `streaming`(`url`: String)
-    case `recording`(`url`: String)
-    case `starts`(`timestamp`: UInt64)
-    case `ends`(`timestamp`: UInt64)
-    case `status`(`status`: String)
-    case `currentParticipants`(`num`: UInt64)
-    case `totalParticipants`(`num`: UInt64)
-    case `absoluteUrl`(`url`: String)
-    case `method`(`method`: String)
-    case `payload`(`hash`: String)
+    case unknown(kind: TagKind, data: [String])
+    case e(eventId: String, relayUrl: String?, marker: String?)
+    case pubKey(publicKey: String, relayUrl: String?)
+    case eventReport(eventId: String, report: String)
+    case pubKeyReport(publicKey: String, report: String)
+    case pubKeyLiveEvent(pk: String, relayUrl: String?, marker: String, proof: String?)
+    case reference(reference: String)
+    case relayMetadata(relayUrl: String, rw: String?)
+    case hashtag(hashtag: String)
+    case geohash(geohash: String)
+    case identifier(identifier: String)
+    case externalIdentity(identity: String, proof: String)
+    case a(kind: UInt64, publicKey: String, identifier: String, relayUrl: String?)
+    case relayUrl(relayUrl: String)
+    case contactList(pk: String, relayUrl: String?, alias: String?)
+    case pow(nonce: String, difficulty: UInt8)
+    case delegation(delegatorPk: String, conditions: String, sig: String)
+    case contentWarning(reason: String?)
+    case expiration(timestamp: UInt64)
+    case subject(subject: String)
+    case challenge(challenge: String)
+    case title(title: String)
+    case image(url: String, dimensions: String?)
+    case thumb(url: String, dimensions: String?)
+    case summary(summary: String)
+    case description(desc: String)
+    case bolt11(bolt11: String)
+    case preimage(preimage: String)
+    case relays(urls: [String])
+    case amount(amount: UInt64)
+    case lnurl(lnurl: String)
+    case name(name: String)
+    case publishedAt(timestamp: UInt64)
+    case url(url: String)
+    case mimeType(mime: String)
+    case aes256Gcm(key: String, iv: String)
+    case sha256(hash: String)
+    case size(size: UInt64)
+    case dim(dimensions: String)
+    case magnet(uri: String)
+    case blurhash(blurhash: String)
+    case streaming(url: String)
+    case recording(url: String)
+    case starts(timestamp: UInt64)
+    case ends(timestamp: UInt64)
+    case status(status: String)
+    case currentParticipants(num: UInt64)
+    case totalParticipants(num: UInt64)
+    case absoluteUrl(url: String)
+    case method(method: String)
+    case payload(hash: String)
+    case anon(msg: String?)
+    case proxy(id: String, `protocol`: String)
 }
 
 public struct FfiConverterTypeTagEnum: FfiConverterRustBuffer {
@@ -3547,230 +3890,239 @@ public struct FfiConverterTypeTagEnum: FfiConverterRustBuffer {
         let variant: Int32 = try readInt(&buf)
         switch variant {
         
-        case 1: return .`unknown`(
-            `kind`: try FfiConverterTypeTagKind.read(from: &buf), 
-            `data`: try FfiConverterSequenceString.read(from: &buf)
+        case 1: return .unknown(
+            kind: try FfiConverterTypeTagKind.read(from: &buf), 
+            data: try FfiConverterSequenceString.read(from: &buf)
         )
         
-        case 2: return .`e`(
-            `eventId`: try FfiConverterString.read(from: &buf), 
-            `relayUrl`: try FfiConverterOptionString.read(from: &buf), 
-            `marker`: try FfiConverterOptionString.read(from: &buf)
+        case 2: return .e(
+            eventId: try FfiConverterString.read(from: &buf), 
+            relayUrl: try FfiConverterOptionString.read(from: &buf), 
+            marker: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 3: return .`pubKey`(
-            `publicKey`: try FfiConverterString.read(from: &buf), 
-            `relayUrl`: try FfiConverterOptionString.read(from: &buf)
+        case 3: return .pubKey(
+            publicKey: try FfiConverterString.read(from: &buf), 
+            relayUrl: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 4: return .`eventReport`(
-            `eventId`: try FfiConverterString.read(from: &buf), 
-            `report`: try FfiConverterString.read(from: &buf)
+        case 4: return .eventReport(
+            eventId: try FfiConverterString.read(from: &buf), 
+            report: try FfiConverterString.read(from: &buf)
         )
         
-        case 5: return .`pubKeyReport`(
-            `publicKey`: try FfiConverterString.read(from: &buf), 
-            `report`: try FfiConverterString.read(from: &buf)
+        case 5: return .pubKeyReport(
+            publicKey: try FfiConverterString.read(from: &buf), 
+            report: try FfiConverterString.read(from: &buf)
         )
         
-        case 6: return .`pubKeyLiveEvent`(
-            `pk`: try FfiConverterString.read(from: &buf), 
-            `relayUrl`: try FfiConverterOptionString.read(from: &buf), 
-            `marker`: try FfiConverterString.read(from: &buf), 
-            `proof`: try FfiConverterOptionString.read(from: &buf)
+        case 6: return .pubKeyLiveEvent(
+            pk: try FfiConverterString.read(from: &buf), 
+            relayUrl: try FfiConverterOptionString.read(from: &buf), 
+            marker: try FfiConverterString.read(from: &buf), 
+            proof: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 7: return .`reference`(
-            `reference`: try FfiConverterString.read(from: &buf)
+        case 7: return .reference(
+            reference: try FfiConverterString.read(from: &buf)
         )
         
-        case 8: return .`relayMetadata`(
-            `relayUrl`: try FfiConverterString.read(from: &buf), 
-            `rw`: try FfiConverterOptionString.read(from: &buf)
+        case 8: return .relayMetadata(
+            relayUrl: try FfiConverterString.read(from: &buf), 
+            rw: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 9: return .`hashtag`(
-            `hashtag`: try FfiConverterString.read(from: &buf)
+        case 9: return .hashtag(
+            hashtag: try FfiConverterString.read(from: &buf)
         )
         
-        case 10: return .`geohash`(
-            `geohash`: try FfiConverterString.read(from: &buf)
+        case 10: return .geohash(
+            geohash: try FfiConverterString.read(from: &buf)
         )
         
-        case 11: return .`identifier`(
-            `identifier`: try FfiConverterString.read(from: &buf)
+        case 11: return .identifier(
+            identifier: try FfiConverterString.read(from: &buf)
         )
         
-        case 12: return .`externalIdentity`(
-            `identity`: try FfiConverterString.read(from: &buf), 
-            `proof`: try FfiConverterString.read(from: &buf)
+        case 12: return .externalIdentity(
+            identity: try FfiConverterString.read(from: &buf), 
+            proof: try FfiConverterString.read(from: &buf)
         )
         
-        case 13: return .`a`(
-            `kind`: try FfiConverterUInt64.read(from: &buf), 
-            `publicKey`: try FfiConverterString.read(from: &buf), 
-            `identifier`: try FfiConverterString.read(from: &buf), 
-            `relayUrl`: try FfiConverterOptionString.read(from: &buf)
+        case 13: return .a(
+            kind: try FfiConverterUInt64.read(from: &buf), 
+            publicKey: try FfiConverterString.read(from: &buf), 
+            identifier: try FfiConverterString.read(from: &buf), 
+            relayUrl: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 14: return .`relayUrl`(
-            `relayUrl`: try FfiConverterString.read(from: &buf)
+        case 14: return .relayUrl(
+            relayUrl: try FfiConverterString.read(from: &buf)
         )
         
-        case 15: return .`contactList`(
-            `pk`: try FfiConverterString.read(from: &buf), 
-            `relayUrl`: try FfiConverterOptionString.read(from: &buf), 
-            `alias`: try FfiConverterOptionString.read(from: &buf)
+        case 15: return .contactList(
+            pk: try FfiConverterString.read(from: &buf), 
+            relayUrl: try FfiConverterOptionString.read(from: &buf), 
+            alias: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 16: return .`pow`(
-            `nonce`: try FfiConverterString.read(from: &buf), 
-            `difficulty`: try FfiConverterUInt8.read(from: &buf)
+        case 16: return .pow(
+            nonce: try FfiConverterString.read(from: &buf), 
+            difficulty: try FfiConverterUInt8.read(from: &buf)
         )
         
-        case 17: return .`delegation`(
-            `delegatorPk`: try FfiConverterString.read(from: &buf), 
-            `conditions`: try FfiConverterString.read(from: &buf), 
-            `sig`: try FfiConverterString.read(from: &buf)
+        case 17: return .delegation(
+            delegatorPk: try FfiConverterString.read(from: &buf), 
+            conditions: try FfiConverterString.read(from: &buf), 
+            sig: try FfiConverterString.read(from: &buf)
         )
         
-        case 18: return .`contentWarning`(
-            `reason`: try FfiConverterOptionString.read(from: &buf)
+        case 18: return .contentWarning(
+            reason: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 19: return .`expiration`(
-            `timestamp`: try FfiConverterUInt64.read(from: &buf)
+        case 19: return .expiration(
+            timestamp: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 20: return .`subject`(
-            `subject`: try FfiConverterString.read(from: &buf)
+        case 20: return .subject(
+            subject: try FfiConverterString.read(from: &buf)
         )
         
-        case 21: return .`challenge`(
-            `challenge`: try FfiConverterString.read(from: &buf)
+        case 21: return .challenge(
+            challenge: try FfiConverterString.read(from: &buf)
         )
         
-        case 22: return .`title`(
-            `title`: try FfiConverterString.read(from: &buf)
+        case 22: return .title(
+            title: try FfiConverterString.read(from: &buf)
         )
         
-        case 23: return .`image`(
-            `url`: try FfiConverterString.read(from: &buf), 
-            `dimensions`: try FfiConverterOptionString.read(from: &buf)
+        case 23: return .image(
+            url: try FfiConverterString.read(from: &buf), 
+            dimensions: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 24: return .`thumb`(
-            `url`: try FfiConverterString.read(from: &buf), 
-            `dimensions`: try FfiConverterOptionString.read(from: &buf)
+        case 24: return .thumb(
+            url: try FfiConverterString.read(from: &buf), 
+            dimensions: try FfiConverterOptionString.read(from: &buf)
         )
         
-        case 25: return .`summary`(
-            `summary`: try FfiConverterString.read(from: &buf)
+        case 25: return .summary(
+            summary: try FfiConverterString.read(from: &buf)
         )
         
-        case 26: return .`description`(
-            `desc`: try FfiConverterString.read(from: &buf)
+        case 26: return .description(
+            desc: try FfiConverterString.read(from: &buf)
         )
         
-        case 27: return .`bolt11`(
-            `bolt11`: try FfiConverterString.read(from: &buf)
+        case 27: return .bolt11(
+            bolt11: try FfiConverterString.read(from: &buf)
         )
         
-        case 28: return .`preimage`(
-            `preimage`: try FfiConverterString.read(from: &buf)
+        case 28: return .preimage(
+            preimage: try FfiConverterString.read(from: &buf)
         )
         
-        case 29: return .`relays`(
-            `urls`: try FfiConverterSequenceString.read(from: &buf)
+        case 29: return .relays(
+            urls: try FfiConverterSequenceString.read(from: &buf)
         )
         
-        case 30: return .`amount`(
-            `amount`: try FfiConverterUInt64.read(from: &buf)
+        case 30: return .amount(
+            amount: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 31: return .`lnurl`(
-            `lnurl`: try FfiConverterString.read(from: &buf)
+        case 31: return .lnurl(
+            lnurl: try FfiConverterString.read(from: &buf)
         )
         
-        case 32: return .`name`(
-            `name`: try FfiConverterString.read(from: &buf)
+        case 32: return .name(
+            name: try FfiConverterString.read(from: &buf)
         )
         
-        case 33: return .`publishedAt`(
-            `timestamp`: try FfiConverterUInt64.read(from: &buf)
+        case 33: return .publishedAt(
+            timestamp: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 34: return .`url`(
-            `url`: try FfiConverterString.read(from: &buf)
+        case 34: return .url(
+            url: try FfiConverterString.read(from: &buf)
         )
         
-        case 35: return .`mimeType`(
-            `mime`: try FfiConverterString.read(from: &buf)
+        case 35: return .mimeType(
+            mime: try FfiConverterString.read(from: &buf)
         )
         
-        case 36: return .`aes256Gcm`(
-            `key`: try FfiConverterString.read(from: &buf), 
-            `iv`: try FfiConverterString.read(from: &buf)
+        case 36: return .aes256Gcm(
+            key: try FfiConverterString.read(from: &buf), 
+            iv: try FfiConverterString.read(from: &buf)
         )
         
-        case 37: return .`sha256`(
-            `hash`: try FfiConverterString.read(from: &buf)
+        case 37: return .sha256(
+            hash: try FfiConverterString.read(from: &buf)
         )
         
-        case 38: return .`size`(
-            `size`: try FfiConverterUInt64.read(from: &buf)
+        case 38: return .size(
+            size: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 39: return .`dim`(
-            `dimensions`: try FfiConverterString.read(from: &buf)
+        case 39: return .dim(
+            dimensions: try FfiConverterString.read(from: &buf)
         )
         
-        case 40: return .`magnet`(
-            `uri`: try FfiConverterString.read(from: &buf)
+        case 40: return .magnet(
+            uri: try FfiConverterString.read(from: &buf)
         )
         
-        case 41: return .`blurhash`(
-            `blurhash`: try FfiConverterString.read(from: &buf)
+        case 41: return .blurhash(
+            blurhash: try FfiConverterString.read(from: &buf)
         )
         
-        case 42: return .`streaming`(
-            `url`: try FfiConverterString.read(from: &buf)
+        case 42: return .streaming(
+            url: try FfiConverterString.read(from: &buf)
         )
         
-        case 43: return .`recording`(
-            `url`: try FfiConverterString.read(from: &buf)
+        case 43: return .recording(
+            url: try FfiConverterString.read(from: &buf)
         )
         
-        case 44: return .`starts`(
-            `timestamp`: try FfiConverterUInt64.read(from: &buf)
+        case 44: return .starts(
+            timestamp: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 45: return .`ends`(
-            `timestamp`: try FfiConverterUInt64.read(from: &buf)
+        case 45: return .ends(
+            timestamp: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 46: return .`status`(
-            `status`: try FfiConverterString.read(from: &buf)
+        case 46: return .status(
+            status: try FfiConverterString.read(from: &buf)
         )
         
-        case 47: return .`currentParticipants`(
-            `num`: try FfiConverterUInt64.read(from: &buf)
+        case 47: return .currentParticipants(
+            num: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 48: return .`totalParticipants`(
-            `num`: try FfiConverterUInt64.read(from: &buf)
+        case 48: return .totalParticipants(
+            num: try FfiConverterUInt64.read(from: &buf)
         )
         
-        case 49: return .`absoluteUrl`(
-            `url`: try FfiConverterString.read(from: &buf)
+        case 49: return .absoluteUrl(
+            url: try FfiConverterString.read(from: &buf)
         )
         
-        case 50: return .`method`(
-            `method`: try FfiConverterString.read(from: &buf)
+        case 50: return .method(
+            method: try FfiConverterString.read(from: &buf)
         )
         
-        case 51: return .`payload`(
-            `hash`: try FfiConverterString.read(from: &buf)
+        case 51: return .payload(
+            hash: try FfiConverterString.read(from: &buf)
+        )
+        
+        case 52: return .anon(
+            msg: try FfiConverterOptionString.read(from: &buf)
+        )
+        
+        case 53: return .proxy(
+            id: try FfiConverterString.read(from: &buf), 
+            protocol: try FfiConverterString.read(from: &buf)
         )
         
         default: throw UniffiInternalError.unexpectedEnumCase
@@ -3781,281 +4133,292 @@ public struct FfiConverterTypeTagEnum: FfiConverterRustBuffer {
         switch value {
         
         
-        case let .`unknown`(`kind`,`data`):
+        case let .unknown(kind,data):
             writeInt(&buf, Int32(1))
-            FfiConverterTypeTagKind.write(`kind`, into: &buf)
-            FfiConverterSequenceString.write(`data`, into: &buf)
+            FfiConverterTypeTagKind.write(kind, into: &buf)
+            FfiConverterSequenceString.write(data, into: &buf)
             
         
-        case let .`e`(`eventId`,`relayUrl`,`marker`):
+        case let .e(eventId,relayUrl,marker):
             writeInt(&buf, Int32(2))
-            FfiConverterString.write(`eventId`, into: &buf)
-            FfiConverterOptionString.write(`relayUrl`, into: &buf)
-            FfiConverterOptionString.write(`marker`, into: &buf)
+            FfiConverterString.write(eventId, into: &buf)
+            FfiConverterOptionString.write(relayUrl, into: &buf)
+            FfiConverterOptionString.write(marker, into: &buf)
             
         
-        case let .`pubKey`(`publicKey`,`relayUrl`):
+        case let .pubKey(publicKey,relayUrl):
             writeInt(&buf, Int32(3))
-            FfiConverterString.write(`publicKey`, into: &buf)
-            FfiConverterOptionString.write(`relayUrl`, into: &buf)
+            FfiConverterString.write(publicKey, into: &buf)
+            FfiConverterOptionString.write(relayUrl, into: &buf)
             
         
-        case let .`eventReport`(`eventId`,`report`):
+        case let .eventReport(eventId,report):
             writeInt(&buf, Int32(4))
-            FfiConverterString.write(`eventId`, into: &buf)
-            FfiConverterString.write(`report`, into: &buf)
+            FfiConverterString.write(eventId, into: &buf)
+            FfiConverterString.write(report, into: &buf)
             
         
-        case let .`pubKeyReport`(`publicKey`,`report`):
+        case let .pubKeyReport(publicKey,report):
             writeInt(&buf, Int32(5))
-            FfiConverterString.write(`publicKey`, into: &buf)
-            FfiConverterString.write(`report`, into: &buf)
+            FfiConverterString.write(publicKey, into: &buf)
+            FfiConverterString.write(report, into: &buf)
             
         
-        case let .`pubKeyLiveEvent`(`pk`,`relayUrl`,`marker`,`proof`):
+        case let .pubKeyLiveEvent(pk,relayUrl,marker,proof):
             writeInt(&buf, Int32(6))
-            FfiConverterString.write(`pk`, into: &buf)
-            FfiConverterOptionString.write(`relayUrl`, into: &buf)
-            FfiConverterString.write(`marker`, into: &buf)
-            FfiConverterOptionString.write(`proof`, into: &buf)
+            FfiConverterString.write(pk, into: &buf)
+            FfiConverterOptionString.write(relayUrl, into: &buf)
+            FfiConverterString.write(marker, into: &buf)
+            FfiConverterOptionString.write(proof, into: &buf)
             
         
-        case let .`reference`(`reference`):
+        case let .reference(reference):
             writeInt(&buf, Int32(7))
-            FfiConverterString.write(`reference`, into: &buf)
+            FfiConverterString.write(reference, into: &buf)
             
         
-        case let .`relayMetadata`(`relayUrl`,`rw`):
+        case let .relayMetadata(relayUrl,rw):
             writeInt(&buf, Int32(8))
-            FfiConverterString.write(`relayUrl`, into: &buf)
-            FfiConverterOptionString.write(`rw`, into: &buf)
+            FfiConverterString.write(relayUrl, into: &buf)
+            FfiConverterOptionString.write(rw, into: &buf)
             
         
-        case let .`hashtag`(`hashtag`):
+        case let .hashtag(hashtag):
             writeInt(&buf, Int32(9))
-            FfiConverterString.write(`hashtag`, into: &buf)
+            FfiConverterString.write(hashtag, into: &buf)
             
         
-        case let .`geohash`(`geohash`):
+        case let .geohash(geohash):
             writeInt(&buf, Int32(10))
-            FfiConverterString.write(`geohash`, into: &buf)
+            FfiConverterString.write(geohash, into: &buf)
             
         
-        case let .`identifier`(`identifier`):
+        case let .identifier(identifier):
             writeInt(&buf, Int32(11))
-            FfiConverterString.write(`identifier`, into: &buf)
+            FfiConverterString.write(identifier, into: &buf)
             
         
-        case let .`externalIdentity`(`identity`,`proof`):
+        case let .externalIdentity(identity,proof):
             writeInt(&buf, Int32(12))
-            FfiConverterString.write(`identity`, into: &buf)
-            FfiConverterString.write(`proof`, into: &buf)
+            FfiConverterString.write(identity, into: &buf)
+            FfiConverterString.write(proof, into: &buf)
             
         
-        case let .`a`(`kind`,`publicKey`,`identifier`,`relayUrl`):
+        case let .a(kind,publicKey,identifier,relayUrl):
             writeInt(&buf, Int32(13))
-            FfiConverterUInt64.write(`kind`, into: &buf)
-            FfiConverterString.write(`publicKey`, into: &buf)
-            FfiConverterString.write(`identifier`, into: &buf)
-            FfiConverterOptionString.write(`relayUrl`, into: &buf)
+            FfiConverterUInt64.write(kind, into: &buf)
+            FfiConverterString.write(publicKey, into: &buf)
+            FfiConverterString.write(identifier, into: &buf)
+            FfiConverterOptionString.write(relayUrl, into: &buf)
             
         
-        case let .`relayUrl`(`relayUrl`):
+        case let .relayUrl(relayUrl):
             writeInt(&buf, Int32(14))
-            FfiConverterString.write(`relayUrl`, into: &buf)
+            FfiConverterString.write(relayUrl, into: &buf)
             
         
-        case let .`contactList`(`pk`,`relayUrl`,`alias`):
+        case let .contactList(pk,relayUrl,alias):
             writeInt(&buf, Int32(15))
-            FfiConverterString.write(`pk`, into: &buf)
-            FfiConverterOptionString.write(`relayUrl`, into: &buf)
-            FfiConverterOptionString.write(`alias`, into: &buf)
+            FfiConverterString.write(pk, into: &buf)
+            FfiConverterOptionString.write(relayUrl, into: &buf)
+            FfiConverterOptionString.write(alias, into: &buf)
             
         
-        case let .`pow`(`nonce`,`difficulty`):
+        case let .pow(nonce,difficulty):
             writeInt(&buf, Int32(16))
-            FfiConverterString.write(`nonce`, into: &buf)
-            FfiConverterUInt8.write(`difficulty`, into: &buf)
+            FfiConverterString.write(nonce, into: &buf)
+            FfiConverterUInt8.write(difficulty, into: &buf)
             
         
-        case let .`delegation`(`delegatorPk`,`conditions`,`sig`):
+        case let .delegation(delegatorPk,conditions,sig):
             writeInt(&buf, Int32(17))
-            FfiConverterString.write(`delegatorPk`, into: &buf)
-            FfiConverterString.write(`conditions`, into: &buf)
-            FfiConverterString.write(`sig`, into: &buf)
+            FfiConverterString.write(delegatorPk, into: &buf)
+            FfiConverterString.write(conditions, into: &buf)
+            FfiConverterString.write(sig, into: &buf)
             
         
-        case let .`contentWarning`(`reason`):
+        case let .contentWarning(reason):
             writeInt(&buf, Int32(18))
-            FfiConverterOptionString.write(`reason`, into: &buf)
+            FfiConverterOptionString.write(reason, into: &buf)
             
         
-        case let .`expiration`(`timestamp`):
+        case let .expiration(timestamp):
             writeInt(&buf, Int32(19))
-            FfiConverterUInt64.write(`timestamp`, into: &buf)
+            FfiConverterUInt64.write(timestamp, into: &buf)
             
         
-        case let .`subject`(`subject`):
+        case let .subject(subject):
             writeInt(&buf, Int32(20))
-            FfiConverterString.write(`subject`, into: &buf)
+            FfiConverterString.write(subject, into: &buf)
             
         
-        case let .`challenge`(`challenge`):
+        case let .challenge(challenge):
             writeInt(&buf, Int32(21))
-            FfiConverterString.write(`challenge`, into: &buf)
+            FfiConverterString.write(challenge, into: &buf)
             
         
-        case let .`title`(`title`):
+        case let .title(title):
             writeInt(&buf, Int32(22))
-            FfiConverterString.write(`title`, into: &buf)
+            FfiConverterString.write(title, into: &buf)
             
         
-        case let .`image`(`url`,`dimensions`):
+        case let .image(url,dimensions):
             writeInt(&buf, Int32(23))
-            FfiConverterString.write(`url`, into: &buf)
-            FfiConverterOptionString.write(`dimensions`, into: &buf)
+            FfiConverterString.write(url, into: &buf)
+            FfiConverterOptionString.write(dimensions, into: &buf)
             
         
-        case let .`thumb`(`url`,`dimensions`):
+        case let .thumb(url,dimensions):
             writeInt(&buf, Int32(24))
-            FfiConverterString.write(`url`, into: &buf)
-            FfiConverterOptionString.write(`dimensions`, into: &buf)
+            FfiConverterString.write(url, into: &buf)
+            FfiConverterOptionString.write(dimensions, into: &buf)
             
         
-        case let .`summary`(`summary`):
+        case let .summary(summary):
             writeInt(&buf, Int32(25))
-            FfiConverterString.write(`summary`, into: &buf)
+            FfiConverterString.write(summary, into: &buf)
             
         
-        case let .`description`(`desc`):
+        case let .description(desc):
             writeInt(&buf, Int32(26))
-            FfiConverterString.write(`desc`, into: &buf)
+            FfiConverterString.write(desc, into: &buf)
             
         
-        case let .`bolt11`(`bolt11`):
+        case let .bolt11(bolt11):
             writeInt(&buf, Int32(27))
-            FfiConverterString.write(`bolt11`, into: &buf)
+            FfiConverterString.write(bolt11, into: &buf)
             
         
-        case let .`preimage`(`preimage`):
+        case let .preimage(preimage):
             writeInt(&buf, Int32(28))
-            FfiConverterString.write(`preimage`, into: &buf)
+            FfiConverterString.write(preimage, into: &buf)
             
         
-        case let .`relays`(`urls`):
+        case let .relays(urls):
             writeInt(&buf, Int32(29))
-            FfiConverterSequenceString.write(`urls`, into: &buf)
+            FfiConverterSequenceString.write(urls, into: &buf)
             
         
-        case let .`amount`(`amount`):
+        case let .amount(amount):
             writeInt(&buf, Int32(30))
-            FfiConverterUInt64.write(`amount`, into: &buf)
+            FfiConverterUInt64.write(amount, into: &buf)
             
         
-        case let .`lnurl`(`lnurl`):
+        case let .lnurl(lnurl):
             writeInt(&buf, Int32(31))
-            FfiConverterString.write(`lnurl`, into: &buf)
+            FfiConverterString.write(lnurl, into: &buf)
             
         
-        case let .`name`(`name`):
+        case let .name(name):
             writeInt(&buf, Int32(32))
-            FfiConverterString.write(`name`, into: &buf)
+            FfiConverterString.write(name, into: &buf)
             
         
-        case let .`publishedAt`(`timestamp`):
+        case let .publishedAt(timestamp):
             writeInt(&buf, Int32(33))
-            FfiConverterUInt64.write(`timestamp`, into: &buf)
+            FfiConverterUInt64.write(timestamp, into: &buf)
             
         
-        case let .`url`(`url`):
+        case let .url(url):
             writeInt(&buf, Int32(34))
-            FfiConverterString.write(`url`, into: &buf)
+            FfiConverterString.write(url, into: &buf)
             
         
-        case let .`mimeType`(`mime`):
+        case let .mimeType(mime):
             writeInt(&buf, Int32(35))
-            FfiConverterString.write(`mime`, into: &buf)
+            FfiConverterString.write(mime, into: &buf)
             
         
-        case let .`aes256Gcm`(`key`,`iv`):
+        case let .aes256Gcm(key,iv):
             writeInt(&buf, Int32(36))
-            FfiConverterString.write(`key`, into: &buf)
-            FfiConverterString.write(`iv`, into: &buf)
+            FfiConverterString.write(key, into: &buf)
+            FfiConverterString.write(iv, into: &buf)
             
         
-        case let .`sha256`(`hash`):
+        case let .sha256(hash):
             writeInt(&buf, Int32(37))
-            FfiConverterString.write(`hash`, into: &buf)
+            FfiConverterString.write(hash, into: &buf)
             
         
-        case let .`size`(`size`):
+        case let .size(size):
             writeInt(&buf, Int32(38))
-            FfiConverterUInt64.write(`size`, into: &buf)
+            FfiConverterUInt64.write(size, into: &buf)
             
         
-        case let .`dim`(`dimensions`):
+        case let .dim(dimensions):
             writeInt(&buf, Int32(39))
-            FfiConverterString.write(`dimensions`, into: &buf)
+            FfiConverterString.write(dimensions, into: &buf)
             
         
-        case let .`magnet`(`uri`):
+        case let .magnet(uri):
             writeInt(&buf, Int32(40))
-            FfiConverterString.write(`uri`, into: &buf)
+            FfiConverterString.write(uri, into: &buf)
             
         
-        case let .`blurhash`(`blurhash`):
+        case let .blurhash(blurhash):
             writeInt(&buf, Int32(41))
-            FfiConverterString.write(`blurhash`, into: &buf)
+            FfiConverterString.write(blurhash, into: &buf)
             
         
-        case let .`streaming`(`url`):
+        case let .streaming(url):
             writeInt(&buf, Int32(42))
-            FfiConverterString.write(`url`, into: &buf)
+            FfiConverterString.write(url, into: &buf)
             
         
-        case let .`recording`(`url`):
+        case let .recording(url):
             writeInt(&buf, Int32(43))
-            FfiConverterString.write(`url`, into: &buf)
+            FfiConverterString.write(url, into: &buf)
             
         
-        case let .`starts`(`timestamp`):
+        case let .starts(timestamp):
             writeInt(&buf, Int32(44))
-            FfiConverterUInt64.write(`timestamp`, into: &buf)
+            FfiConverterUInt64.write(timestamp, into: &buf)
             
         
-        case let .`ends`(`timestamp`):
+        case let .ends(timestamp):
             writeInt(&buf, Int32(45))
-            FfiConverterUInt64.write(`timestamp`, into: &buf)
+            FfiConverterUInt64.write(timestamp, into: &buf)
             
         
-        case let .`status`(`status`):
+        case let .status(status):
             writeInt(&buf, Int32(46))
-            FfiConverterString.write(`status`, into: &buf)
+            FfiConverterString.write(status, into: &buf)
             
         
-        case let .`currentParticipants`(`num`):
+        case let .currentParticipants(num):
             writeInt(&buf, Int32(47))
-            FfiConverterUInt64.write(`num`, into: &buf)
+            FfiConverterUInt64.write(num, into: &buf)
             
         
-        case let .`totalParticipants`(`num`):
+        case let .totalParticipants(num):
             writeInt(&buf, Int32(48))
-            FfiConverterUInt64.write(`num`, into: &buf)
+            FfiConverterUInt64.write(num, into: &buf)
             
         
-        case let .`absoluteUrl`(`url`):
+        case let .absoluteUrl(url):
             writeInt(&buf, Int32(49))
-            FfiConverterString.write(`url`, into: &buf)
+            FfiConverterString.write(url, into: &buf)
             
         
-        case let .`method`(`method`):
+        case let .method(method):
             writeInt(&buf, Int32(50))
-            FfiConverterString.write(`method`, into: &buf)
+            FfiConverterString.write(method, into: &buf)
             
         
-        case let .`payload`(`hash`):
+        case let .payload(hash):
             writeInt(&buf, Int32(51))
-            FfiConverterString.write(`hash`, into: &buf)
+            FfiConverterString.write(hash, into: &buf)
+            
+        
+        case let .anon(msg):
+            writeInt(&buf, Int32(52))
+            FfiConverterOptionString.write(msg, into: &buf)
+            
+        
+        case let .proxy(id,`protocol`):
+            writeInt(&buf, Int32(53))
+            FfiConverterString.write(id, into: &buf)
+            FfiConverterString.write(`protocol`, into: &buf)
             
         }
     }
@@ -4079,8 +4442,8 @@ extension TagEnum: Equatable, Hashable {}
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 public enum TagKind {
     
-    case `known`(`known`: TagKindKnown)
-    case `unknown`(`unknown`: String)
+    case known(known: TagKindKnown)
+    case unknown(unknown: String)
 }
 
 public struct FfiConverterTypeTagKind: FfiConverterRustBuffer {
@@ -4090,12 +4453,12 @@ public struct FfiConverterTypeTagKind: FfiConverterRustBuffer {
         let variant: Int32 = try readInt(&buf)
         switch variant {
         
-        case 1: return .`known`(
-            `known`: try FfiConverterTypeTagKindKnown.read(from: &buf)
+        case 1: return .known(
+            known: try FfiConverterTypeTagKindKnown.read(from: &buf)
         )
         
-        case 2: return .`unknown`(
-            `unknown`: try FfiConverterString.read(from: &buf)
+        case 2: return .unknown(
+            unknown: try FfiConverterString.read(from: &buf)
         )
         
         default: throw UniffiInternalError.unexpectedEnumCase
@@ -4106,14 +4469,14 @@ public struct FfiConverterTypeTagKind: FfiConverterRustBuffer {
         switch value {
         
         
-        case let .`known`(`known`):
+        case let .known(known):
             writeInt(&buf, Int32(1))
-            FfiConverterTypeTagKindKnown.write(`known`, into: &buf)
+            FfiConverterTypeTagKindKnown.write(known, into: &buf)
             
         
-        case let .`unknown`(`unknown`):
+        case let .unknown(unknown):
             writeInt(&buf, Int32(2))
-            FfiConverterString.write(`unknown`, into: &buf)
+            FfiConverterString.write(unknown, into: &buf)
             
         }
     }
@@ -4137,51 +4500,53 @@ extension TagKind: Equatable, Hashable {}
 // See https://github.com/mozilla/uniffi-rs/issues/396 for further discussion.
 public enum TagKindKnown {
     
-    case `p`
-    case `e`
-    case `r`
-    case `t`
-    case `g`
-    case `d`
-    case `a`
-    case `i`
-    case `m`
-    case `u`
-    case `x`
-    case `relayUrl`
-    case `nonce`
-    case `delegation`
-    case `contentWarning`
-    case `expiration`
-    case `subject`
-    case `challenge`
-    case `title`
-    case `image`
-    case `thumb`
-    case `summary`
-    case `publishedAt`
-    case `description`
-    case `bolt11`
-    case `preimage`
-    case `relays`
-    case `amount`
-    case `lnurl`
-    case `name`
-    case `url`
-    case `aes256Gcm`
-    case `size`
-    case `dim`
-    case `magnet`
-    case `blurhash`
-    case `streaming`
-    case `recording`
-    case `starts`
-    case `ends`
-    case `status`
-    case `currentParticipants`
-    case `totalParticipants`
-    case `method`
-    case `payload`
+    case p
+    case e
+    case r
+    case t
+    case g
+    case d
+    case a
+    case i
+    case m
+    case u
+    case x
+    case relayUrl
+    case nonce
+    case delegation
+    case contentWarning
+    case expiration
+    case subject
+    case challenge
+    case title
+    case image
+    case thumb
+    case summary
+    case publishedAt
+    case description
+    case bolt11
+    case preimage
+    case relays
+    case amount
+    case lnurl
+    case name
+    case url
+    case aes256Gcm
+    case size
+    case dim
+    case magnet
+    case blurhash
+    case streaming
+    case recording
+    case starts
+    case ends
+    case status
+    case currentParticipants
+    case totalParticipants
+    case method
+    case payload
+    case anon
+    case proxy
 }
 
 public struct FfiConverterTypeTagKindKnown: FfiConverterRustBuffer {
@@ -4191,95 +4556,99 @@ public struct FfiConverterTypeTagKindKnown: FfiConverterRustBuffer {
         let variant: Int32 = try readInt(&buf)
         switch variant {
         
-        case 1: return .`p`
+        case 1: return .p
         
-        case 2: return .`e`
+        case 2: return .e
         
-        case 3: return .`r`
+        case 3: return .r
         
-        case 4: return .`t`
+        case 4: return .t
         
-        case 5: return .`g`
+        case 5: return .g
         
-        case 6: return .`d`
+        case 6: return .d
         
-        case 7: return .`a`
+        case 7: return .a
         
-        case 8: return .`i`
+        case 8: return .i
         
-        case 9: return .`m`
+        case 9: return .m
         
-        case 10: return .`u`
+        case 10: return .u
         
-        case 11: return .`x`
+        case 11: return .x
         
-        case 12: return .`relayUrl`
+        case 12: return .relayUrl
         
-        case 13: return .`nonce`
+        case 13: return .nonce
         
-        case 14: return .`delegation`
+        case 14: return .delegation
         
-        case 15: return .`contentWarning`
+        case 15: return .contentWarning
         
-        case 16: return .`expiration`
+        case 16: return .expiration
         
-        case 17: return .`subject`
+        case 17: return .subject
         
-        case 18: return .`challenge`
+        case 18: return .challenge
         
-        case 19: return .`title`
+        case 19: return .title
         
-        case 20: return .`image`
+        case 20: return .image
         
-        case 21: return .`thumb`
+        case 21: return .thumb
         
-        case 22: return .`summary`
+        case 22: return .summary
         
-        case 23: return .`publishedAt`
+        case 23: return .publishedAt
         
-        case 24: return .`description`
+        case 24: return .description
         
-        case 25: return .`bolt11`
+        case 25: return .bolt11
         
-        case 26: return .`preimage`
+        case 26: return .preimage
         
-        case 27: return .`relays`
+        case 27: return .relays
         
-        case 28: return .`amount`
+        case 28: return .amount
         
-        case 29: return .`lnurl`
+        case 29: return .lnurl
         
-        case 30: return .`name`
+        case 30: return .name
         
-        case 31: return .`url`
+        case 31: return .url
         
-        case 32: return .`aes256Gcm`
+        case 32: return .aes256Gcm
         
-        case 33: return .`size`
+        case 33: return .size
         
-        case 34: return .`dim`
+        case 34: return .dim
         
-        case 35: return .`magnet`
+        case 35: return .magnet
         
-        case 36: return .`blurhash`
+        case 36: return .blurhash
         
-        case 37: return .`streaming`
+        case 37: return .streaming
         
-        case 38: return .`recording`
+        case 38: return .recording
         
-        case 39: return .`starts`
+        case 39: return .starts
         
-        case 40: return .`ends`
+        case 40: return .ends
         
-        case 41: return .`status`
+        case 41: return .status
         
-        case 42: return .`currentParticipants`
+        case 42: return .currentParticipants
         
-        case 43: return .`totalParticipants`
+        case 43: return .totalParticipants
         
-        case 44: return .`method`
+        case 44: return .method
         
-        case 45: return .`payload`
+        case 45: return .payload
+        
+        case 46: return .anon
+        
+        case 47: return .proxy
         
         default: throw UniffiInternalError.unexpectedEnumCase
         }
@@ -4289,184 +4658,192 @@ public struct FfiConverterTypeTagKindKnown: FfiConverterRustBuffer {
         switch value {
         
         
-        case .`p`:
+        case .p:
             writeInt(&buf, Int32(1))
         
         
-        case .`e`:
+        case .e:
             writeInt(&buf, Int32(2))
         
         
-        case .`r`:
+        case .r:
             writeInt(&buf, Int32(3))
         
         
-        case .`t`:
+        case .t:
             writeInt(&buf, Int32(4))
         
         
-        case .`g`:
+        case .g:
             writeInt(&buf, Int32(5))
         
         
-        case .`d`:
+        case .d:
             writeInt(&buf, Int32(6))
         
         
-        case .`a`:
+        case .a:
             writeInt(&buf, Int32(7))
         
         
-        case .`i`:
+        case .i:
             writeInt(&buf, Int32(8))
         
         
-        case .`m`:
+        case .m:
             writeInt(&buf, Int32(9))
         
         
-        case .`u`:
+        case .u:
             writeInt(&buf, Int32(10))
         
         
-        case .`x`:
+        case .x:
             writeInt(&buf, Int32(11))
         
         
-        case .`relayUrl`:
+        case .relayUrl:
             writeInt(&buf, Int32(12))
         
         
-        case .`nonce`:
+        case .nonce:
             writeInt(&buf, Int32(13))
         
         
-        case .`delegation`:
+        case .delegation:
             writeInt(&buf, Int32(14))
         
         
-        case .`contentWarning`:
+        case .contentWarning:
             writeInt(&buf, Int32(15))
         
         
-        case .`expiration`:
+        case .expiration:
             writeInt(&buf, Int32(16))
         
         
-        case .`subject`:
+        case .subject:
             writeInt(&buf, Int32(17))
         
         
-        case .`challenge`:
+        case .challenge:
             writeInt(&buf, Int32(18))
         
         
-        case .`title`:
+        case .title:
             writeInt(&buf, Int32(19))
         
         
-        case .`image`:
+        case .image:
             writeInt(&buf, Int32(20))
         
         
-        case .`thumb`:
+        case .thumb:
             writeInt(&buf, Int32(21))
         
         
-        case .`summary`:
+        case .summary:
             writeInt(&buf, Int32(22))
         
         
-        case .`publishedAt`:
+        case .publishedAt:
             writeInt(&buf, Int32(23))
         
         
-        case .`description`:
+        case .description:
             writeInt(&buf, Int32(24))
         
         
-        case .`bolt11`:
+        case .bolt11:
             writeInt(&buf, Int32(25))
         
         
-        case .`preimage`:
+        case .preimage:
             writeInt(&buf, Int32(26))
         
         
-        case .`relays`:
+        case .relays:
             writeInt(&buf, Int32(27))
         
         
-        case .`amount`:
+        case .amount:
             writeInt(&buf, Int32(28))
         
         
-        case .`lnurl`:
+        case .lnurl:
             writeInt(&buf, Int32(29))
         
         
-        case .`name`:
+        case .name:
             writeInt(&buf, Int32(30))
         
         
-        case .`url`:
+        case .url:
             writeInt(&buf, Int32(31))
         
         
-        case .`aes256Gcm`:
+        case .aes256Gcm:
             writeInt(&buf, Int32(32))
         
         
-        case .`size`:
+        case .size:
             writeInt(&buf, Int32(33))
         
         
-        case .`dim`:
+        case .dim:
             writeInt(&buf, Int32(34))
         
         
-        case .`magnet`:
+        case .magnet:
             writeInt(&buf, Int32(35))
         
         
-        case .`blurhash`:
+        case .blurhash:
             writeInt(&buf, Int32(36))
         
         
-        case .`streaming`:
+        case .streaming:
             writeInt(&buf, Int32(37))
         
         
-        case .`recording`:
+        case .recording:
             writeInt(&buf, Int32(38))
         
         
-        case .`starts`:
+        case .starts:
             writeInt(&buf, Int32(39))
         
         
-        case .`ends`:
+        case .ends:
             writeInt(&buf, Int32(40))
         
         
-        case .`status`:
+        case .status:
             writeInt(&buf, Int32(41))
         
         
-        case .`currentParticipants`:
+        case .currentParticipants:
             writeInt(&buf, Int32(42))
         
         
-        case .`totalParticipants`:
+        case .totalParticipants:
             writeInt(&buf, Int32(43))
         
         
-        case .`method`:
+        case .method:
             writeInt(&buf, Int32(44))
         
         
-        case .`payload`:
+        case .payload:
             writeInt(&buf, Int32(45))
+        
+        
+        case .anon:
+            writeInt(&buf, Int32(46))
+        
+        
+        case .proxy:
+            writeInt(&buf, Int32(47))
         
         }
     }
@@ -4485,27 +4862,6 @@ public func FfiConverterTypeTagKindKnown_lower(_ value: TagKindKnown) -> RustBuf
 extension TagKindKnown: Equatable, Hashable {}
 
 
-
-fileprivate struct FfiConverterOptionUInt64: FfiConverterRustBuffer {
-    typealias SwiftType = UInt64?
-
-    public static func write(_ value: SwiftType, into buf: inout [UInt8]) {
-        guard let value = value else {
-            writeInt(&buf, Int8(0))
-            return
-        }
-        writeInt(&buf, Int8(1))
-        FfiConverterUInt64.write(value, into: &buf)
-    }
-
-    public static func read(from buf: inout (data: Data, offset: Data.Index)) throws -> SwiftType {
-        switch try readInt(&buf) as Int8 {
-        case 0: return nil
-        case 1: return try FfiConverterUInt64.read(from: &buf)
-        default: throw UniffiInternalError.unexpectedOptionalTag
-        }
-    }
-}
 
 fileprivate struct FfiConverterOptionString: FfiConverterRustBuffer {
     typealias SwiftType = String?
@@ -4768,48 +5124,58 @@ fileprivate struct FfiConverterSequenceSequenceString: FfiConverterRustBuffer {
     }
 }
 
-public func `nip04Encrypt`(`secretKey`: SecretKey, `publicKey`: PublicKey, `content`: String) throws -> String {
-    return try  FfiConverterString.lift(
+public func generateSharedKey(secretKey: SecretKey, publicKey: PublicKey) throws -> [UInt8] {
+    return try  FfiConverterSequenceUInt8.lift(
         try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_func_nip04_encrypt(
-        FfiConverterTypeSecretKey.lower(`secretKey`),
-        FfiConverterTypePublicKey.lower(`publicKey`),
-        FfiConverterString.lower(`content`),$0)
+    uniffi_nostr_fn_func_generate_shared_key(
+        FfiConverterTypeSecretKey.lower(secretKey),
+        FfiConverterTypePublicKey.lower(publicKey),$0)
 }
     )
 }
 
-public func `nip04Decrypt`(`secretKey`: SecretKey, `publicKey`: PublicKey, `encryptedContent`: String) throws -> String {
-    return try  FfiConverterString.lift(
-        try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_func_nip04_decrypt(
-        FfiConverterTypeSecretKey.lower(`secretKey`),
-        FfiConverterTypePublicKey.lower(`publicKey`),
-        FfiConverterString.lower(`encryptedContent`),$0)
-}
-    )
-}
-
-public func `verifyNip05`(`publicKey`: PublicKey, `nip05`: String, `proxy`: String?) throws {
-    try rustCallWithError(FfiConverterTypeNostrError.lift) {
-    uniffi_nostr_fn_func_verify_nip05(
-        FfiConverterTypePublicKey.lower(`publicKey`),
-        FfiConverterString.lower(`nip05`),
-        FfiConverterOptionString.lower(`proxy`),$0)
-}
-}
-
-
-
-public func `getNip05Profile`(`nip05`: String, `proxy`: String?) throws -> Profile {
+public func getNip05Profile(nip05: String, proxy: String?) throws -> Profile {
     return try  FfiConverterTypeProfile.lift(
         try rustCallWithError(FfiConverterTypeNostrError.lift) {
     uniffi_nostr_fn_func_get_nip05_profile(
-        FfiConverterString.lower(`nip05`),
-        FfiConverterOptionString.lower(`proxy`),$0)
+        FfiConverterString.lower(nip05),
+        FfiConverterOptionString.lower(proxy),$0)
 }
     )
 }
+
+public func nip04Decrypt(secretKey: SecretKey, publicKey: PublicKey, encryptedContent: String) throws -> String {
+    return try  FfiConverterString.lift(
+        try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_func_nip04_decrypt(
+        FfiConverterTypeSecretKey.lower(secretKey),
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterString.lower(encryptedContent),$0)
+}
+    )
+}
+
+public func nip04Encrypt(secretKey: SecretKey, publicKey: PublicKey, content: String) throws -> String {
+    return try  FfiConverterString.lift(
+        try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_func_nip04_encrypt(
+        FfiConverterTypeSecretKey.lower(secretKey),
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterString.lower(content),$0)
+}
+    )
+}
+
+public func verifyNip05(publicKey: PublicKey, nip05: String, proxy: String?) throws {
+    try rustCallWithError(FfiConverterTypeNostrError.lift) {
+    uniffi_nostr_fn_func_verify_nip05(
+        FfiConverterTypePublicKey.lower(publicKey),
+        FfiConverterString.lower(nip05),
+        FfiConverterOptionString.lower(proxy),$0)
+}
+}
+
+
 
 private enum InitializationResult {
     case ok
@@ -4820,439 +5186,508 @@ private enum InitializationResult {
 // the code inside is only computed once.
 private var initializationResult: InitializationResult {
     // Get the bindings contract version from our ComponentInterface
-    let bindings_contract_version = 22
+    let bindings_contract_version = 23
     // Get the scaffolding contract version by calling the into the dylib
     let scaffolding_contract_version = ffi_nostr_uniffi_contract_version()
     if bindings_contract_version != scaffolding_contract_version {
         return InitializationResult.contractVersionMismatch
     }
-    if (uniffi_nostr_checksum_func_nip04_encrypt() != 38992) {
+    if (uniffi_nostr_checksum_func_generate_shared_key() != 24724) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_func_nip04_decrypt() != 47244) {
+    if (uniffi_nostr_checksum_func_get_nip05_profile() != 57499) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_func_verify_nip05() != 3060) {
+    if (uniffi_nostr_checksum_func_nip04_decrypt() != 58452) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_func_get_nip05_profile() != 22898) {
+    if (uniffi_nostr_checksum_func_nip04_encrypt() != 6306) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_relayinformationdocument_name() != 46470) {
+    if (uniffi_nostr_checksum_func_verify_nip05() != 4459) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_relayinformationdocument_description() != 13756) {
+    if (uniffi_nostr_checksum_method_contact_alias() != 53941) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_relayinformationdocument_pubkey() != 33306) {
+    if (uniffi_nostr_checksum_method_contact_public_key() != 9740) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_relayinformationdocument_contact() != 53669) {
+    if (uniffi_nostr_checksum_method_contact_relay_url() != 48310) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_relayinformationdocument_supported_nips() != 22033) {
+    if (uniffi_nostr_checksum_method_event_as_json() != 28450) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_relayinformationdocument_software() != 35469) {
+    if (uniffi_nostr_checksum_method_event_content() != 5177) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_relayinformationdocument_version() != 29294) {
+    if (uniffi_nostr_checksum_method_event_created_at() != 2474) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_nostrconnecturi_public_key() != 65503) {
+    if (uniffi_nostr_checksum_method_event_id() != 30605) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_nostrconnecturi_relay_url() != 20195) {
+    if (uniffi_nostr_checksum_method_event_kind() != 58685) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_nostrconnecturi_name() != 21835) {
+    if (uniffi_nostr_checksum_method_event_pubkey() != 48909) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_nostrconnecturi_url() != 11013) {
+    if (uniffi_nostr_checksum_method_event_signature() != 8707) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_nostrconnecturi_description() != 60710) {
+    if (uniffi_nostr_checksum_method_event_tags() != 756) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_profile_to_bech32() != 54721) {
+    if (uniffi_nostr_checksum_method_event_verify() != 14167) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_profile_to_nostr_uri() != 39333) {
+    if (uniffi_nostr_checksum_method_eventbuilder_to_event() != 38985) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_profile_public_key() != 1668) {
+    if (uniffi_nostr_checksum_method_eventbuilder_to_pow_event() != 46529) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_profile_relays() != 10511) {
+    if (uniffi_nostr_checksum_method_eventbuilder_to_unsigned_event() != 12084) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_imagedimensions_width() != 14157) {
+    if (uniffi_nostr_checksum_method_eventbuilder_to_unsigned_pow_event() != 19132) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_imagedimensions_height() != 25350) {
+    if (uniffi_nostr_checksum_method_eventid_as_bytes() != 25588) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_timestamp_as_secs() != 25229) {
+    if (uniffi_nostr_checksum_method_eventid_to_bech32() != 33986) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_timestamp_to_human_datetime() != 63573) {
+    if (uniffi_nostr_checksum_method_eventid_to_hex() != 659) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_secretkey_to_hex() != 49435) {
+    if (uniffi_nostr_checksum_method_eventid_to_nostr_uri() != 1748) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_secretkey_to_bech32() != 18228) {
+    if (uniffi_nostr_checksum_method_filemetadata_aes_256_gcm() != 43865) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_publickey_to_hex() != 21121) {
+    if (uniffi_nostr_checksum_method_filemetadata_blurhash() != 25381) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_publickey_to_bech32() != 22428) {
+    if (uniffi_nostr_checksum_method_filemetadata_dimensions() != 57891) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_publickey_to_nostr_uri() != 3782) {
+    if (uniffi_nostr_checksum_method_filemetadata_magnet() != 21300) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_keys_public_key() != 56782) {
+    if (uniffi_nostr_checksum_method_filemetadata_size() != 41767) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_keys_secret_key() != 1967) {
+    if (uniffi_nostr_checksum_method_filter_as_json() != 7784) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_id() != 4651) {
+    if (uniffi_nostr_checksum_method_filter_author() != 29896) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_ids() != 43589) {
+    if (uniffi_nostr_checksum_method_filter_authors() != 49809) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_author() != 2227) {
+    if (uniffi_nostr_checksum_method_filter_custom_tag() != 15734) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_authors() != 13388) {
+    if (uniffi_nostr_checksum_method_filter_event() != 64960) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_kind() != 50575) {
+    if (uniffi_nostr_checksum_method_filter_events() != 20779) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_kinds() != 46551) {
+    if (uniffi_nostr_checksum_method_filter_id() != 58810) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_event() != 19371) {
+    if (uniffi_nostr_checksum_method_filter_identifier() != 18274) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_events() != 46711) {
+    if (uniffi_nostr_checksum_method_filter_ids() != 21135) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_pubkey() != 11829) {
+    if (uniffi_nostr_checksum_method_filter_kind() != 2096) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_pubkeys() != 10151) {
+    if (uniffi_nostr_checksum_method_filter_kinds() != 58712) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_search() != 20086) {
+    if (uniffi_nostr_checksum_method_filter_limit() != 61375) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_since() != 50963) {
+    if (uniffi_nostr_checksum_method_filter_pubkey() != 38756) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_until() != 51231) {
+    if (uniffi_nostr_checksum_method_filter_pubkeys() != 59756) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_limit() != 58651) {
+    if (uniffi_nostr_checksum_method_filter_search() != 52764) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_custom_tag() != 18589) {
+    if (uniffi_nostr_checksum_method_filter_since() != 1326) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filter_as_json() != 51701) {
+    if (uniffi_nostr_checksum_method_filter_until() != 61406) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventid_as_bytes() != 35605) {
+    if (uniffi_nostr_checksum_method_imagedimensions_height() != 32071) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventid_to_hex() != 60848) {
+    if (uniffi_nostr_checksum_method_imagedimensions_width() != 32367) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventid_to_bech32() != 10157) {
+    if (uniffi_nostr_checksum_method_keys_public_key() != 58982) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventid_to_nostr_uri() != 53660) {
+    if (uniffi_nostr_checksum_method_keys_secret_key() != 39689) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_id() != 4332) {
+    if (uniffi_nostr_checksum_method_metadata_as_json() != 52205) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_pubkey() != 49031) {
+    if (uniffi_nostr_checksum_method_metadata_get_about() != 56660) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_created_at() != 33399) {
+    if (uniffi_nostr_checksum_method_metadata_get_banner() != 5499) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_kind() != 9588) {
+    if (uniffi_nostr_checksum_method_metadata_get_display_name() != 34185) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_tags() != 9601) {
+    if (uniffi_nostr_checksum_method_metadata_get_lud06() != 51458) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_content() != 4897) {
+    if (uniffi_nostr_checksum_method_metadata_get_lud16() != 29415) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_sign() != 47073) {
+    if (uniffi_nostr_checksum_method_metadata_get_name() != 55656) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_add_signature() != 3632) {
+    if (uniffi_nostr_checksum_method_metadata_get_nip05() != 34193) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_unsignedevent_as_json() != 5676) {
+    if (uniffi_nostr_checksum_method_metadata_get_picture() != 60836) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_id() != 20498) {
+    if (uniffi_nostr_checksum_method_metadata_get_website() != 51100) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_pubkey() != 37540) {
+    if (uniffi_nostr_checksum_method_metadata_set_about() != 34895) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_created_at() != 21925) {
+    if (uniffi_nostr_checksum_method_metadata_set_banner() != 40704) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_kind() != 46205) {
+    if (uniffi_nostr_checksum_method_metadata_set_display_name() != 37653) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_tags() != 64504) {
+    if (uniffi_nostr_checksum_method_metadata_set_lud06() != 49723) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_content() != 13758) {
+    if (uniffi_nostr_checksum_method_metadata_set_lud16() != 36474) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_signature() != 25215) {
+    if (uniffi_nostr_checksum_method_metadata_set_name() != 963) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_verify() != 64500) {
+    if (uniffi_nostr_checksum_method_metadata_set_nip05() != 62220) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_event_as_json() != 1515) {
+    if (uniffi_nostr_checksum_method_metadata_set_picture() != 65175) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventbuilder_to_event() != 45102) {
+    if (uniffi_nostr_checksum_method_metadata_set_website() != 21399) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventbuilder_to_pow_event() != 27784) {
+    if (uniffi_nostr_checksum_method_nostrconnecturi_description() != 27271) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventbuilder_to_unsigned_event() != 32792) {
+    if (uniffi_nostr_checksum_method_nostrconnecturi_name() != 25457) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_eventbuilder_to_unsigned_pow_event() != 100) {
+    if (uniffi_nostr_checksum_method_nostrconnecturi_public_key() != 51462) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_contact_alias() != 7298) {
+    if (uniffi_nostr_checksum_method_nostrconnecturi_relay_url() != 26877) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_contact_public_key() != 36418) {
+    if (uniffi_nostr_checksum_method_nostrconnecturi_url() != 13676) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_contact_relay_url() != 21061) {
+    if (uniffi_nostr_checksum_method_profile_public_key() != 28898) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_accountmetadata_name() != 60018) {
+    if (uniffi_nostr_checksum_method_profile_relays() != 9441) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_accountmetadata_display_name() != 26155) {
+    if (uniffi_nostr_checksum_method_profile_to_bech32() != 18519) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_accountmetadata_about() != 63602) {
+    if (uniffi_nostr_checksum_method_profile_to_nostr_uri() != 8210) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_accountmetadata_picture() != 45075) {
+    if (uniffi_nostr_checksum_method_publickey_to_bech32() != 25543) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_accountmetadata_nip05() != 33286) {
+    if (uniffi_nostr_checksum_method_publickey_to_hex() != 45768) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filemetadata_aes_256_gcm() != 40093) {
+    if (uniffi_nostr_checksum_method_publickey_to_nostr_uri() != 21150) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filemetadata_size() != 34070) {
+    if (uniffi_nostr_checksum_method_relayinformationdocument_contact() != 58965) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filemetadata_dimensions() != 64867) {
+    if (uniffi_nostr_checksum_method_relayinformationdocument_description() != 54385) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filemetadata_magnet() != 18491) {
+    if (uniffi_nostr_checksum_method_relayinformationdocument_name() != 59667) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_filemetadata_blurhash() != 27024) {
+    if (uniffi_nostr_checksum_method_relayinformationdocument_pubkey() != 19564) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_tag_as_enum() != 32088) {
+    if (uniffi_nostr_checksum_method_relayinformationdocument_software() != 13166) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_tag_as_vec() != 32071) {
+    if (uniffi_nostr_checksum_method_relayinformationdocument_supported_nips() != 26067) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_method_tag_kind() != 16955) {
+    if (uniffi_nostr_checksum_method_relayinformationdocument_version() != 21517) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_relayinformationdocument_get() != 63040) {
+    if (uniffi_nostr_checksum_method_secretkey_to_bech32() != 17851) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_nostrconnecturi_from_string() != 33955) {
+    if (uniffi_nostr_checksum_method_secretkey_to_hex() != 8488) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_profile_new() != 34019) {
+    if (uniffi_nostr_checksum_method_tag_as_enum() != 6414) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_profile_from_bech32() != 30112) {
+    if (uniffi_nostr_checksum_method_tag_as_vec() != 62861) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_profile_from_nostr_uri() != 19167) {
+    if (uniffi_nostr_checksum_method_tag_kind() != 64739) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_imagedimensions_new() != 32279) {
+    if (uniffi_nostr_checksum_method_timestamp_as_secs() != 36413) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_timestamp_now() != 42092) {
+    if (uniffi_nostr_checksum_method_timestamp_to_human_datetime() != 41746) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_timestamp_from_secs() != 44617) {
+    if (uniffi_nostr_checksum_method_unsignedevent_add_signature() != 43421) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_secretkey_from_hex() != 33478) {
+    if (uniffi_nostr_checksum_method_unsignedevent_as_json() != 44549) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_secretkey_from_bech32() != 28655) {
+    if (uniffi_nostr_checksum_method_unsignedevent_content() != 57455) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_publickey_from_hex() != 31721) {
+    if (uniffi_nostr_checksum_method_unsignedevent_created_at() != 37586) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_publickey_from_bech32() != 29843) {
+    if (uniffi_nostr_checksum_method_unsignedevent_id() != 41431) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_publickey_from_nostr_uri() != 14702) {
+    if (uniffi_nostr_checksum_method_unsignedevent_kind() != 8460) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_keys_new() != 27709) {
+    if (uniffi_nostr_checksum_method_unsignedevent_pubkey() != 32860) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_keys_from_public_key() != 36887) {
+    if (uniffi_nostr_checksum_method_unsignedevent_sign() != 23951) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_keys_from_sk_str() != 64210) {
+    if (uniffi_nostr_checksum_method_unsignedevent_tags() != 39426) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_keys_from_pk_str() != 18813) {
+    if (uniffi_nostr_checksum_method_zaprequestdata_amount() != 16051) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_keys_generate() != 18596) {
+    if (uniffi_nostr_checksum_method_zaprequestdata_event_id() != 4558) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_keys_vanity() != 30711) {
+    if (uniffi_nostr_checksum_method_zaprequestdata_lnurl() != 37783) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_keys_from_mnemonic() != 16157) {
+    if (uniffi_nostr_checksum_constructor_contact_new() != 18219) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_filter_new() != 35046) {
+    if (uniffi_nostr_checksum_constructor_event_from_json() != 4014) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_filter_from_json() != 10269) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_add_recommended_relay() != 53291) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventid_new() != 61100) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_auth() != 21676) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventid_from_slice() != 50284) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_delete() != 14938) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventid_from_hex() != 19169) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_file_metadata() != 2861) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventid_from_bech32() != 23310) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_hide_channel_msg() != 24978) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventid_from_nostr_uri() != 48017) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_long_form_text_note() != 33654) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_unsignedevent_from_json() != 7341) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_mute_channel_user() != 22796) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_event_from_json() != 10283) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new() != 35256) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new() != 15629) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new_channel() != 47732) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_set_metadata() != 843) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new_channel_msg() != 28233) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_add_recommended_relay() != 7806) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new_encrypted_direct_msg() != 33140) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new_text_note() != 51738) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new_reaction() != 16130) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_long_form_text_note() != 45548) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new_text_note() != 12087) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_repost() != 17503) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new_zap_receipt() != 21931) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_set_contact_list() != 9032) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_new_zap_request() != 27638) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new_encrypted_direct_msg() != 39791) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_report() != 34633) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_delete() != 59434) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_repost() != 56646) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new_reaction() != 13178) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_set_channel_metadata() != 50677) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new_channel() != 26062) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_set_contact_list() != 52345) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_set_channel_metadata() != 64850) {
+    if (uniffi_nostr_checksum_constructor_eventbuilder_set_metadata() != 26895) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new_channel_msg() != 46173) {
+    if (uniffi_nostr_checksum_constructor_eventid_from_bech32() != 30139) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_hide_channel_msg() != 39139) {
+    if (uniffi_nostr_checksum_constructor_eventid_from_bytes() != 28265) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_mute_channel_user() != 25465) {
+    if (uniffi_nostr_checksum_constructor_eventid_from_hex() != 27317) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_auth() != 9847) {
+    if (uniffi_nostr_checksum_constructor_eventid_from_nostr_uri() != 44612) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_report() != 32359) {
+    if (uniffi_nostr_checksum_constructor_eventid_new() != 21132) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new_zap_request() != 49042) {
+    if (uniffi_nostr_checksum_constructor_filemetadata_new() != 126) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_new_zap() != 24923) {
+    if (uniffi_nostr_checksum_constructor_filter_from_json() != 28003) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_eventbuilder_file_metadata() != 10756) {
+    if (uniffi_nostr_checksum_constructor_filter_new() != 54581) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_contact_new() != 29056) {
+    if (uniffi_nostr_checksum_constructor_imagedimensions_new() != 12211) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_accountmetadata_new() != 2416) {
+    if (uniffi_nostr_checksum_constructor_keys_from_mnemonic() != 4490) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_filemetadata_new() != 58921) {
+    if (uniffi_nostr_checksum_constructor_keys_from_pk_str() != 1057) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_tag_parse() != 23544) {
+    if (uniffi_nostr_checksum_constructor_keys_from_public_key() != 8164) {
         return InitializationResult.apiChecksumMismatch
     }
-    if (uniffi_nostr_checksum_constructor_tag_from_enum() != 36074) {
+    if (uniffi_nostr_checksum_constructor_keys_from_sk_str() != 26915) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_keys_generate() != 47205) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_keys_new() != 50292) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_keys_vanity() != 51759) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_metadata_from_json() != 61572) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_metadata_new() != 62656) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_nostrconnecturi_from_string() != 34025) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_profile_from_bech32() != 38334) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_profile_from_nostr_uri() != 41291) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_profile_new() != 53831) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_publickey_from_bech32() != 1019) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_publickey_from_bytes() != 53027) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_publickey_from_hex() != 36433) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_publickey_from_nostr_uri() != 61137) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_relayinformationdocument_get() != 4544) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_secretkey_from_bech32() != 18682) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_secretkey_from_bytes() != 4355) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_secretkey_from_hex() != 35380) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_tag_from_enum() != 16790) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_tag_parse() != 40148) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_timestamp_from_secs() != 22891) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_timestamp_now() != 26169) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_unsignedevent_from_json() != 33759) {
+        return InitializationResult.apiChecksumMismatch
+    }
+    if (uniffi_nostr_checksum_constructor_zaprequestdata_new() != 63577) {
         return InitializationResult.apiChecksumMismatch
     }
 
