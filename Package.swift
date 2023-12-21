@@ -12,10 +12,9 @@ let package = Package(
     products: [
         .library(name: "Nostr", targets: ["nostrFFI", "Nostr"]),
     ],
-    dependencies: [
-    ],
+    dependencies: [],
     targets: [
-        .binaryTarget(name: "nostrFFI", url: "https://github.com/rust-nostr/nostr-swift/releases/download/0.0.5/nostrFFI.xcframework.zip", checksum: "d68d6179768fd7864ae95204e04a2ad1172198ba8ccc41e0484c9af474ddb625"),
+        .binaryTarget(name: "nostrFFI", url: "https://github.com/rust-nostr/nostr-swift/releases/download/0.6.0/nostrFFI.xcframework.zip", checksum: "a0cb9b8c54bdd4168f3d63410e17b9e50520087f22c3000268f4efb642dab4e2"),
         .target(name: "Nostr", dependencies: ["nostrFFI"]),
     ]
 )
