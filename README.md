@@ -1,35 +1,8 @@
 # Nostr – Swift Package
 
-## Installation
-
-This package is intended to be used with the [Swift Package Manager](https://www.swift.org/package-manager/).
-
-### Xcode
-
-Via `File > Add Packages...`, add
-
-```
-https://github.com/rust-nostr/nostr-swift.git
-```
-
-as a package dependency in Xcode.
-
-### Swift Package
-
-Add the following to the dependencies array in your `Package.swift`:
-
-``` swift
-.package(url: "https://github.com/rust-nostr/nostr-swift.git", from: "0.8.0"),
-```
-
 ## 📄 Usage
 
-``` swift
-import Nostr
-
-let keys = Keys.generate();
-let event = try EventBuilder.newTextNote(content: "Hello from Rust Nostr SDK Swift bindings", tags: []).toEvent(keys: keys);
-```
+Check https://rust-nostr.org
 
 ## Information for Maintainers and Contributors
 
