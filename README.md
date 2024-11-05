@@ -1,5 +1,9 @@
 # Nostr – Swift Package
 
+## ⚠️ Deprecated ⚠️
+
+Use https://github.com/rust-nostr/nostr-sdk-swift instead.
+
 ## 📄 Usage
 
 Check https://rust-nostr.org
